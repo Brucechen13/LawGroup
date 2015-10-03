@@ -1,0 +1,29 @@
+<resources>
+    <string name="app_name">LawGroup</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+
+    <!--底部栏-->
+    <string name="text_tab_message">法律</string>
+    <string name="text_tab_service">案例</string>
+    <string name="text_tab_profile">社区</string>
+    <string name="text_tab_setting">个人</string>
+
+    <!--操作种类-->
+    <string name="kind_mood">看心情</string>
+    <string name="kind_activity">办活动</string>
+    <string name="kind_msg">开帖子</string>
+
+    <string name="button_backward">返回</string>
+    <string name="button_submit">提交</string>
+
+    <string name="send_msg">发消息</string>
+
+    <!--个人界面-->
+    <string name="user_pic">头 像</string>
+    <string name="user_name">昵 称</string>
+    <string name="user_score">积 分</string>
+    <string name="user_sign">签 名</string>
+    <string name="user_setting">设 置</string>
+</resources>

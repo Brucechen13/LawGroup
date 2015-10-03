@@ -1,0 +1,13 @@
+<resources>
+<!-- Default screen margins, per the Android Design guidelines. -->
+<dimen name="activity_horizontal_margin">16dp</dimen>
+<dimen name="activity_vertical_margin">16dp</dimen>
+
+<!--头部标题栏-->
+<dimen name="header_height">45dp</dimen>
+<dimen name="footer_height">60dp</dimen>
+<dimen name="table_margin">5dp</dimen>
+<dimen name="layout_marginLeft">12dp</dimen>
+<dimen name="layout_marginRight">10dp</dimen>
+<dimen name="drawable_padding">6dp</dimen>
+</resources>

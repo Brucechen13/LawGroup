@@ -1,0 +1,63 @@
+<merge xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1.0" >
+
+        <Button
+            android:id="@+id/button_state1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:tag="message"
+            android:text="@string/text_tab_message"
+            android:drawableTop="@drawable/ic_message_selector"
+            style="@style/Button_Tab" />
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1.0" >
+
+        <Button
+            android:id="@+id/button_state2"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="@string/text_tab_service"
+            android:drawableTop="@drawable/ic_service_selector"
+            android:tag="service"
+            style="@style/Button_Tab"/>
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1.0" >
+
+        <Button
+            android:id="@+id/button_state3"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:drawableTop="@drawable/ic_profile_selector"
+            android:tag="personal"
+            android:text="@string/text_tab_profile"
+            style="@style/Button_Tab"/>
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1.0" >
+
+        <Button
+            android:id="@+id/button_state4"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:drawableTop="@drawable/ic_setting_selector"
+            android:tag="settings"
+            android:text="@string/text_tab_setting"
+            style="@style/Button_Tab"/>
+    </FrameLayout>
+
+</merge>
