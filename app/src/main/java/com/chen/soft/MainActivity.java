@@ -1,9 +1,11 @@
 package com.chen.soft;
 
+import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.widget.TextView;
 
 import com.chen.soft.fragment.FragmentCallback;
@@ -124,5 +126,11 @@ public class MainActivity extends FragmentActivity implements
 				 */
             }
         }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.d("info", "activity"+requestCode+" "+resultCode);
     }
 }

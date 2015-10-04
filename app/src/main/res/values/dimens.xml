@@ -10,4 +10,14 @@
 <dimen name="layout_marginLeft">12dp</dimen>
 <dimen name="layout_marginRight">10dp</dimen>
 <dimen name="drawable_padding">6dp</dimen>
+
+    <dimen name="user_picHeight">80dp</dimen>
+    <dimen name="user_picSize">60dp</dimen>
+    <dimen name="user_viewHeight">1dp</dimen>
+    <dimen name="user_viewMargin">60dp</dimen>
+    <dimen name="user_signMargin">4dp</dimen>
+    <dimen name="user_arrowMargin">10dp</dimen>
+    <dimen name="user_itemHeight">45dp</dimen>
+    <dimen name="user_wordMargin">28dp</dimen>
+    <dimen name="user_settingMargin">15dp</dimen>
 </resources>
