@@ -51,10 +51,11 @@
                         android:layout_width="@dimen/user_picHeight"
                         android:layout_height="@dimen/user_picHeight"
                         android:layout_centerVertical="true"
-                        android:layout_toLeftOf="@+id/tou_img"
+                        android:layout_toLeftOf="@+id/tou_arrow"
                         android:scaleType="fitXY" />
 
                     <ImageView
+                        android:id="@+id/tou_arrow"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentRight="true"
@@ -220,19 +221,19 @@
                     android:background="@mipmap/line" />
 
                 <LinearLayout
-                    android:id="@+id/setting"
                     android:layout_width="fill_parent"
                     android:layout_height="42dip"
                     android:clickable="true"
                     android:gravity="center"
-                    style="@style/layout_settting">
+                    style="@style/layout_setting">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:text="@string/user_setting"
-                        style="@style/text_userItem" />
+                    <Button
+                        android:id="@+id/setting"
+                        style="@style/text_black_18"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical|center"
+                        android:text="@string/user_setting" />
                 </LinearLayout>
 
 

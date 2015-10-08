@@ -13,8 +13,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.chen.soft.R;
-import com.chen.soft.adapt.MsgBean;
-import com.chen.soft.adapt.MsgsAdapter;
+import com.chen.soft.adapt.SocialMsgBean;
+import com.chen.soft.adapt.SocialBeansAdapter;
 import com.chen.soft.util.CommonUtil;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
@@ -28,12 +28,9 @@ import java.util.Date;
  */
 public class FragmentSocial extends BaseFragment {
 
-    public static final int HTTP_REQUEST_SUCCESS = -1;
-    public static final int HTTP_REQUEST_ERROR = 0;
-
     private TextView hint;
     private PullToRefreshListView msgList = null;
-    private MsgsAdapter adapter;
+    private SocialBeansAdapter adapter;
     private int offset = 0;
 
     private Date date;
@@ -57,9 +54,8 @@ public class FragmentSocial extends BaseFragment {
         super.onActivityCreated(savedInstanceState);
 
         msgList = (PullToRefreshListView) getView().findViewById(R.id.msgList);
-        hint = (TextView) getView().findViewById(R.id.hint);
 
-        adapter = new MsgsAdapter(getView().getContext(),
+        adapter = new SocialBeansAdapter(getView().getContext(),
                 getMsgs(null));
         initPullToRefreshListView(msgList, adapter);
 
@@ -164,10 +160,10 @@ public class FragmentSocial extends BaseFragment {
 
     }
 
-    public ArrayList<MsgBean> getMsgs(Object res){
-        ArrayList<MsgBean> ret = new ArrayList<MsgBean>();
+    public ArrayList<SocialMsgBean> getMsgs(Object res){
+        ArrayList<SocialMsgBean> ret = new ArrayList<SocialMsgBean>();
         for (int i = 0; i < 10; i++) {
-            MsgBean msg = new MsgBean();
+            SocialMsgBean msg = new SocialMsgBean();
             ret.add(msg);
         }
         return ret;
@@ -201,44 +197,5 @@ public class FragmentSocial extends BaseFragment {
 //        }
 //        return ret;
 //}
-
-    class GetNewsTask extends AsyncTask<String, Void, Integer> {
-        private PullToRefreshListView mPtrlv;
-
-        public GetNewsTask(PullToRefreshListView ptrlv) {
-            this.mPtrlv = ptrlv;
-        }
-
-        @Override
-        protected Integer doInBackground(String... params) {
-            if (CommonUtil.checkWifiConnection(getActivity())) {
-                try {
-                    Thread.sleep(1000);
-                    return HTTP_REQUEST_SUCCESS;
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-            return HTTP_REQUEST_ERROR;
-        }
-
-        @Override
-        protected void onPostExecute(Integer result) {
-            super.onPostExecute(result);
-            switch (result) {
-                case HTTP_REQUEST_SUCCESS:
-                    //adapter.addNews(getMsgs(res)(10));
-                    adapter.notifyDataSetChanged();
-                    break;
-                case HTTP_REQUEST_ERROR:
-                    Toast.makeText(getActivity(), "请检查网络", Toast.LENGTH_SHORT)
-                            .show();
-                    break;
-            }
-            mPtrlv.onRefreshComplete();
-        }
-
-    }
-
 
 }

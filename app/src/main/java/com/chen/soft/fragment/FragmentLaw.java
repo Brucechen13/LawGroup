@@ -115,7 +115,7 @@ public class FragmentLaw extends BaseFragment implements View.OnClickListener {
                     String cvalue = cjsonObject.getString(ckey);
                     claws.add(new LawBean(ckey, cvalue, key));
                 }
-                Log.d("info", "len: " + claws.size());
+                //Log.d("info", "len: " + claws.size());
                 law.setLawChilds(claws);
                 laws.add(law);
             }

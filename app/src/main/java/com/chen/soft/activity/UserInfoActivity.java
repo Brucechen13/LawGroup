@@ -26,7 +26,7 @@ public class UserInfoActivity extends TitleActivity implements View.OnClickListe
     @Override
     protected void onForward(View backwardView) {
         // TODO Auto-generated method stub
-        super.onBackward(backwardView);
+        super.onForward(backwardView);
         Log.d("info", "submit");
         String resultContent = info_et.getText().toString().trim();
         int length = resultContent.length();
@@ -43,7 +43,7 @@ public class UserInfoActivity extends TitleActivity implements View.OnClickListe
         resultIntent.putExtras(bundle);
         this.setResult(RESULT_OK, resultIntent);
         Log.d("info", "set value");
-        finish();
+        this.finish();
     }
 
     @Override
@@ -65,5 +65,11 @@ public class UserInfoActivity extends TitleActivity implements View.OnClickListe
         setTitle(titleString);
         info_et = (EditText) findViewById(R.id.editText);
         info_et.setText(mimecontent);
+    }
+
+    @Override
+    public void onClick(View v) {
+        // TODO Auto-generated method stub
+        super.onClick(v);
     }
 }

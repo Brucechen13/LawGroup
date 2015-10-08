@@ -1,8 +1,10 @@
 package com.chen.soft.fragment;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -12,14 +14,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.chen.soft.R;
+import com.chen.soft.activity.SettingActivity;
 import com.chen.soft.activity.UserInfoActivity;
 import com.chen.soft.util.StatusUtil;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 /**
  * Created by chenchi_94 on 2015/9/17.
@@ -30,6 +37,7 @@ public class FragmentUser  extends BaseFragment implements View.OnClickListener{
     private RelativeLayout nick_rl;
     private RelativeLayout signature_rl;
     private RelativeLayout score_rl;
+    private LinearLayout setting;
 
     private ImageView detail_img;
     private TextView nick_name;
@@ -39,12 +47,6 @@ public class FragmentUser  extends BaseFragment implements View.OnClickListener{
     private String signature;
     private String nickname;
     private String score;
-
-    private static final int PHOTO_SUCCESS = 1;
-    private static final int CAMERA_SUCCESS = 2;
-    private static final int NONE = 0;
-    private static final int PHOTORESOULT = 3;// 结果
-    public static final String IMAGE_UNSPECIFIED = "image/*";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -65,16 +67,14 @@ public class FragmentUser  extends BaseFragment implements View.OnClickListener{
         nick_name = (TextView) view.findViewById(R.id.nick_name);
         signature_tv = (TextView) view.findViewById(R.id.signature);
         score_tv = (TextView) view.findViewById(R.id.score);
+        detail_img = (ImageView)view.findViewById(R.id.detail_img);
         showText();
 
-        tou_rl = (RelativeLayout) view.findViewById(R.id.tou_rl);
-        tou_rl.setOnClickListener(this);
-        nick_rl = (RelativeLayout) view.findViewById(R.id.nick_rl);
-        nick_rl.setOnClickListener(this);
-        signature_rl = (RelativeLayout) view.findViewById(R.id.signature_rl);
-        signature_rl.setOnClickListener(this);
-        score_rl = (RelativeLayout) view.findViewById(R.id.score_rl);
-        score_rl.setOnClickListener(this);
+        view.findViewById(R.id.tou_rl).setOnClickListener(this);
+        view.findViewById(R.id.nick_rl).setOnClickListener(this);
+        view.findViewById(R.id.signature_rl).setOnClickListener(this);
+        view.findViewById(R.id.score_rl).setOnClickListener(this);
+        view.findViewById(R.id.setting).setOnClickListener(this);
     }
 
     private void showText() {
@@ -105,14 +105,14 @@ public class FragmentUser  extends BaseFragment implements View.OnClickListener{
                                                     "myImage/newtemp.jpg")));
 
                                     startActivityForResult(getImageByCamera,
-                                            CAMERA_SUCCESS);
+                                            StatusUtil.CAMERA_SUCCESS);
                                 } else {
 
                                     Intent getImage = new Intent(
                                             Intent.ACTION_GET_CONTENT);
                                     getImage.addCategory(Intent.CATEGORY_OPENABLE);
                                     getImage.setType("image/*");
-                                    startActivityForResult(getImage, PHOTO_SUCCESS);
+                                    startActivityForResult(getImage, StatusUtil.PHOTO_SUCCESS);
                                 }
                             }
                         }).create();
@@ -126,6 +126,10 @@ public class FragmentUser  extends BaseFragment implements View.OnClickListener{
                 intent.putExtras(bundle);
                 startActivityForResult(intent, StatusUtil.SIGNATURE);
                 break;
+            case R.id.setting:
+                Intent intentSet = new Intent(this.getActivity(), SettingActivity.class);
+                startActivity(intentSet);
+                break;
             default:
                 break;
         }
@@ -135,18 +139,107 @@ public class FragmentUser  extends BaseFragment implements View.OnClickListener{
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Log.d("info", "fragmetn" + requestCode + " " + resultCode);
-        if (resultCode != getActivity().RESULT_OK) {
+        Log.d("info", "activity" + requestCode + " " + resultCode);
+        getActivity().getContentResolver();
+        if (resultCode != getActivity().RESULT_OK )
             return;
-        }
-        String info = data.getExtras().getString("result");
-        Log.d("info", "fragment" + requestCode + " " + resultCode + info);
         switch (requestCode) {
             case StatusUtil.SIGNATURE:
+                String info = data.getExtras().getString("result");
+                Log.d("info", "fragment" + requestCode + " " + resultCode + info);
                 signature_tv.setText(info);
                 break;
             default:
                 break;
+        }
+        // 拍照
+        if (requestCode == StatusUtil.CAMERA_SUCCESS) {
+
+            // 设置文件保存路径这里放在跟目录下
+            File picture = new File(Environment.getExternalStorageDirectory()
+                    + "/myImage/newtemp.jpg");
+            startPhotoZoom(Uri.fromFile(picture));
+        }
+        if (data == null) {
+            return;
+        }
+        // 读取相册缩放图片
+        if (requestCode == StatusUtil.PHOTO_SUCCESS) {
+
+            startPhotoZoom(data.getData());
+
+        }
+        // 处理结果
+        if (requestCode == StatusUtil.PHOTORESOULT) {
+            Bundle extras = data.getExtras();
+            if (extras != null) {
+
+                Bitmap photo = extras.getParcelable("data");
+                savePicture(photo);
+                // 这边要处理提交头像的操作
+                // xxxxxxxxxxxxxx
+                detail_img.setImageBitmap(photo);
+            }
+        }
+    }
+
+    /*
+     * 将压缩图片保存到自定义的文件中 Bitmap类有一compress成员，可以把bitmap保存到一个stream中。
+     */
+    @SuppressLint("SdCardPath")
+    public void savePicture(Bitmap bitmap) {
+
+        String sdStatus = Environment.getExternalStorageState();
+        if (!sdStatus.equals(Environment.MEDIA_MOUNTED)) { // 检测sd是否可用
+            // Log.v("TestFile",
+            // "SD card is not avaiable/writeable right now.");
+            return;
+        }
+        FileOutputStream b = null;
+        File file = new File("/sdcard/myImage/");
+        file.mkdirs();// 创建文件夹
+        String fileName = "/sdcard/myImage/temp.jpg";
+
+        try {
+            b = new FileOutputStream(fileName);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, b);// 把数据写入文件
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                b.flush();
+                b.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /*
+     * 进行图片剪裁
+     */
+    public void startPhotoZoom(Uri uri) {
+        Intent intent = new Intent("com.android.camera.action.CROP");
+        intent.setDataAndType(uri, StatusUtil.IMAGE_UNSPECIFIED);
+        intent.putExtra("crop", "true");
+        // aspectX aspectY 是宽高的比例
+        intent.putExtra("aspectX", 1);
+        intent.putExtra("aspectY", 1);
+        // outputX outputY 是裁剪图片宽高
+        intent.putExtra("outputX", 64);
+        intent.putExtra("outputY", 64);
+        intent.putExtra("return-data", true);
+        startActivityForResult(intent, StatusUtil.PHOTORESOULT);
+    }
+
+    private void scanOldImageFile() {
+        File file = new File(Environment.getExternalStorageDirectory(),
+                "/myImage/newtemp.jpg");
+        File file1 = new File(Environment.getExternalStorageDirectory(),
+                "/myImage/temp.jpg");
+        if (file.exists() || file1.exists()) {
+            file.delete();
+            file1.delete();
         }
     }
 }

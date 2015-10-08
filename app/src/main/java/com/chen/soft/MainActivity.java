@@ -1,6 +1,10 @@
 package com.chen.soft;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
+import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
@@ -14,6 +18,12 @@ import com.chen.soft.fragment.FragmentLaw;
 import com.chen.soft.fragment.FragmentSocial;
 import com.chen.soft.fragment.FragmentUser;
 import com.chen.soft.fragment.FragmentUtils;
+import com.chen.soft.util.StatusUtil;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 
 public class MainActivity extends FragmentActivity implements
@@ -51,8 +61,8 @@ public class MainActivity extends FragmentActivity implements
         mTabView = (TabView) findViewById(R.id.view_tab);
         mTabView.setOnTabChangeListener(this);
         mTabView.setCurrentTab(mCurrentTabIndex);
-        mCurrentFragment = new FragmentLaw();
-        FragmentUtils.replaceFragment(fragmentManager, R.id.layout_content,
+        //mCurrentFragment = new FragmentLaw();
+        mCurrentFragment = FragmentUtils.replaceFragment(fragmentManager, R.id.layout_content,
                 FragmentLaw.class, null, false);
 
     }
@@ -126,11 +136,5 @@ public class MainActivity extends FragmentActivity implements
 				 */
             }
         }
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        Log.d("info", "activity"+requestCode+" "+resultCode);
     }
 }

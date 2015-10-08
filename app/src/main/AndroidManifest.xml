@@ -38,6 +38,7 @@
         <activity android:name=".activity.LawsActivity" />
         <activity android:name=".activity.LawDetail" />
         <activity android:name=".activity.UserInfoActivity"/>
+        <activity android:name=".activity.SettingActivity"/>
     </application>
 
 </manifest>

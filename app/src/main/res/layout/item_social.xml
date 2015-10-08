@@ -47,7 +47,7 @@
                 android:textSize="18.0sp" />
 
             <TextView
-                android:id="@+id/date"
+                android:id="@+id/time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
@@ -70,9 +70,7 @@
             <RelativeLayout
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/layout_marginRight"
-                android:layout_marginLeft="@dimen/layout_marginRight"
-                android:layout_marginRight="@dimen/layout_marginRight"
+                android:layout_margin="@dimen/layout_marginRight"
 
                 >
 
@@ -85,45 +83,6 @@
                     android:text="今天天气很好"
                     android:textColor="#404040"
                     android:textSize="16.0sp" />
-
-            </RelativeLayout>
-
-
-            <RelativeLayout
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/layout_marginRight"
-                android:layout_marginLeft="@dimen/layout_marginRight"
-                android:layout_marginRight="@dimen/layout_marginRight"
-                android:layout_marginBottom="@dimen/table_margin"
-
-                >
-                <TextView
-                    android:id="@+id/from"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="来自"
-                    android:textColor="@color/gray"
-                    android:textSize="14.0sp" />
-
-                <TextView
-                    android:id="@+id/area_tv"
-                    android:layout_width="120dp"
-                    android:layout_height="wrap_content"
-                    android:layout_toRightOf="@id/from"
-                    android:text="某某地"
-                    android:textColor="#7888a9"
-                    android:textSize="14.0sp" />
-
-                <TextView
-                    android:id="@+id/time"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/table_margin"
-                    android:layout_toRightOf="@id/area_tv"
-                    android:text="09:35"
-                    android:textColor="#7888a9"
-                    android:textSize="14.0sp" />
 
             </RelativeLayout>
 
@@ -149,7 +108,10 @@
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:layout_toLeftOf="@+id/comgood_iv"
-                    android:layout_marginRight="10dip">
+                    android:layout_marginRight="10dip"
+
+
+                    >
                     <TextView
                         android:id="@+id/good_num"
                         android:layout_width="wrap_content"
@@ -166,6 +128,9 @@
                         android:text="赞"
                         android:textColor="@color/gray"
                         android:textSize="14.0sp" />
+
+
+
 
                     <TextView
                         android:id="@+id/comment_num"
