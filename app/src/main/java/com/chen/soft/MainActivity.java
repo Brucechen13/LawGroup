@@ -12,12 +12,14 @@ import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.widget.TextView;
 
+import com.chen.soft.activity.LoginActivity;
 import com.chen.soft.fragment.FragmentCallback;
 import com.chen.soft.fragment.FragmentSample;
 import com.chen.soft.fragment.FragmentLaw;
 import com.chen.soft.fragment.FragmentSocial;
 import com.chen.soft.fragment.FragmentUser;
 import com.chen.soft.fragment.FragmentUtils;
+import com.chen.soft.util.LoginUtil;
 import com.chen.soft.util.StatusUtil;
 
 import java.io.File;
@@ -123,10 +125,14 @@ public class MainActivity extends FragmentActivity implements
 				 * BaseActivity.REQUEST_OK_LOGIN); }
 				 */
             } else if (tag.equals("settings")) {
-                mPreviousTabIndex = mCurrentTabIndex;
-                mCurrentTabIndex = 3;
-                mTitleTextView.setText(R.string.text_tab_setting);
-                replaceFragment(FragmentUser.class);
+                if(LoginUtil.isLogin) {
+                    mPreviousTabIndex = mCurrentTabIndex;
+                    mCurrentTabIndex = 3;
+                    mTitleTextView.setText(R.string.text_tab_setting);
+                    replaceFragment(FragmentUser.class);
+                }else {
+                    startActivity(new Intent(this, LoginActivity.class));
+                }
                 // 检查，如果没有登录则跳转到登录界面
 				/*
 				 * final UserConfigManager manager =

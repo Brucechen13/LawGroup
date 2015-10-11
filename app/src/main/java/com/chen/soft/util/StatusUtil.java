@@ -11,5 +11,7 @@ public class StatusUtil {
     public static final int PHOTORESOULT = 3;// 结果
     public static final String IMAGE_UNSPECIFIED = "image/*";
 
+    public static final String SHAREDPREFERENCES_NAME = "law";
+
     public final static int SIGNATURE = 100;
 }

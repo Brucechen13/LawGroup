@@ -21,7 +21,11 @@ import android.widget.TextView;
 import com.chen.soft.R;
 import com.chen.soft.activity.SettingActivity;
 import com.chen.soft.activity.UserInfoActivity;
+import com.chen.soft.user.User;
+import com.chen.soft.util.LoginUtil;
 import com.chen.soft.util.StatusUtil;
+import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.ion.Ion;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -78,6 +82,25 @@ public class FragmentUser  extends BaseFragment implements View.OnClickListener{
     }
 
     private void showText() {
+        User user = LoginUtil.user;
+        nick_name.setText(user.getUserName());
+        signature_tv.setText(user.getSignature());
+        score_tv.setText(""+user.getScore());
+        Ion.with(this).load(user.getPic()).withBitmap()
+                // .placeholder(R.drawable.placeholder_image)
+                .error(R.mipmap.tou).intoImageView(detail_img)
+                .setCallback(new FutureCallback<ImageView>() {
+
+                    @Override
+                    public void onCompleted(Exception arg0, ImageView arg1) {
+                        // TODO Auto-generated method stub
+                        if (arg0 != null) {
+                            Log.d("info", arg0.toString());
+                        }
+                    }
+
+                });
+
     }
 
     @Override

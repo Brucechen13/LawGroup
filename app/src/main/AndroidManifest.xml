@@ -23,6 +23,37 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
+
+        <!-- QQ第三方登陆 -->
+        <meta-data
+            android:name="com.amap.api.v2.apikey"
+            android:value="0d8ce223a6cc527b1b2b6ff4ce23f69e" />
+
+        <activity
+            android:name="com.tencent.tauth.AuthActivity"
+            android:launchMode="singleTask"
+            android:noHistory="true" >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="tencent1104503342" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.tencent.open.yyb.AppbarActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+        <activity android:name="com.tencent.connect.avatar.ImageActivity" />
+        <activity
+            android:name="com.tencent.connect.common.AssistActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name" >
@@ -39,6 +70,7 @@
         <activity android:name=".activity.LawDetail" />
         <activity android:name=".activity.UserInfoActivity"/>
         <activity android:name=".activity.SettingActivity"/>
+        <activity android:name=".activity.LoginActivity"/>
     </application>
 
 </manifest>

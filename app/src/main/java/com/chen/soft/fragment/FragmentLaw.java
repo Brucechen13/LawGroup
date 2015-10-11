@@ -46,12 +46,11 @@ public class FragmentLaw extends BaseFragment implements View.OnClickListener {
     public void onActivityCreated(Bundle savedInstanceState) {
         Log.d("findMe", "Map create");
         super.onActivityCreated(savedInstanceState);
+        msgList = (PullToRefreshListView) getView().findViewById(R.id.lawList);
         new GetNewsTask().execute();
     }
 
     private void intiView(){
-
-        msgList = (PullToRefreshListView) getView().findViewById(R.id.lawList);
         adapter = new LawsAdapter(getView().getContext(),
                 laws);
         initPullToRefreshListView(msgList, adapter);
@@ -138,13 +137,13 @@ public class FragmentLaw extends BaseFragment implements View.OnClickListener {
             super.onPostExecute(result);
             switch (result) {
                 case -1:
+                    intiView();
                     break;
                 case 0:
                     Toast.makeText(getActivity(), "JSON数据解析出错", Toast.LENGTH_SHORT)
                             .show();
                     break;
             }
-            intiView();
         }
 
     }
