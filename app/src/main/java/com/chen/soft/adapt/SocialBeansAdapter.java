@@ -148,4 +148,12 @@ public class SocialBeansAdapter extends BaseAdapter {
         });
         return convertView;
     }
+
+    public void addNews(List<SocialMsgBean> addNews) {
+        data.addAll(addNews);
+    }
+
+    public void addFirstNews(List<SocialMsgBean> addNews) {
+        data.addAll(0, addNews);
+    }
 }

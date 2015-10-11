@@ -23,7 +23,10 @@ import com.chen.soft.activity.SettingActivity;
 import com.chen.soft.activity.UserInfoActivity;
 import com.chen.soft.user.User;
 import com.chen.soft.util.LoginUtil;
+import com.chen.soft.util.ServerUtil;
 import com.chen.soft.util.StatusUtil;
+import com.chen.soft.util.UIShowUtil;
+import com.google.gson.JsonObject;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 
@@ -74,8 +77,8 @@ public class FragmentUser  extends BaseFragment implements View.OnClickListener{
         detail_img = (ImageView)view.findViewById(R.id.detail_img);
         showText();
 
-        view.findViewById(R.id.tou_rl).setOnClickListener(this);
-        view.findViewById(R.id.nick_rl).setOnClickListener(this);
+        //view.findViewById(R.id.tou_rl).setOnClickListener(this);
+        //view.findViewById(R.id.nick_rl).setOnClickListener(this);
         view.findViewById(R.id.signature_rl).setOnClickListener(this);
         view.findViewById(R.id.score_rl).setOnClickListener(this);
         view.findViewById(R.id.setting).setOnClickListener(this);
@@ -85,7 +88,7 @@ public class FragmentUser  extends BaseFragment implements View.OnClickListener{
         User user = LoginUtil.user;
         nick_name.setText(user.getUserName());
         signature_tv.setText(user.getSignature());
-        score_tv.setText(""+user.getScore());
+        score_tv.setText("" + user.getScore());
         Ion.with(this).load(user.getPic()).withBitmap()
                 // .placeholder(R.drawable.placeholder_image)
                 .error(R.mipmap.tou).intoImageView(detail_img)
@@ -170,7 +173,9 @@ public class FragmentUser  extends BaseFragment implements View.OnClickListener{
             case StatusUtil.SIGNATURE:
                 String info = data.getExtras().getString("result");
                 Log.d("info", "fragment" + requestCode + " " + resultCode + info);
+                LoginUtil.user.setSignature(info);
                 signature_tv.setText(info);
+                updateInfo("signature", LoginUtil.user.getSignature());
                 break;
             default:
                 break;
@@ -204,6 +209,34 @@ public class FragmentUser  extends BaseFragment implements View.OnClickListener{
                 detail_img.setImageBitmap(photo);
             }
         }
+    }
+
+    //更新用户信息
+    private void updateInfo(String name, String value) {
+        Ion.with(this)
+                .load(String.format("%s?qq=%s&name=%s&value=%s",
+                        ServerUtil.updateUerUrl, LoginUtil.user.getId(), name, value))
+                .asJsonObject().setCallback(new FutureCallback<JsonObject>() {
+            @Override
+            public void onCompleted(Exception e, JsonObject result) {
+                // TODO Auto-generated method stub
+                if (e != null) {
+                    Log.d("info", e.toString());
+                    UIShowUtil.toastMessage(FragmentUser.this.getActivity(),
+                            "网络异常: " + e.toString());
+                    return;
+                }
+                Log.d("info", "login:" + result);
+                if (result.get("suc").getAsString().equals("true")) {
+                    UIShowUtil.toastMessage(FragmentUser.this.getActivity(),
+                            "更新成功");
+                } else {
+                    UIShowUtil.toastMessage(FragmentUser.this.getActivity(),
+                            "更新失败：" + result.get("suc").getAsString());
+                }
+            }
+
+        });
     }
 
     /*

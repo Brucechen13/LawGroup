@@ -8,17 +8,19 @@ public class SocialMsgBean {
     private String id;
     private String userId;
     private String userName;
+    private String userPic;
     private String upTime;
     private String content;
     private String upCount;
     private String cmCount;
 
-    public SocialMsgBean(String id, String userId, String userName, String content, String time,
+    public SocialMsgBean(String id, String userId, String userName, String userPic, String content, String time,
                    String goodNum, String commentNum) {
         super();
         this.id = id;
         this.userId = userId;
         this.userName = userName;
+        this.userPic = userPic;
         this.content = content;
         this.upTime = time;
         this.upCount = goodNum;
@@ -58,6 +60,14 @@ public class SocialMsgBean {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getUserPic() {
+        return userPic;
+    }
+
+    public void setUserPic(String userPic) {
+        this.userPic = userPic;
     }
 
     public String getUserId() {

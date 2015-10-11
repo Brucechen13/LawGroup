@@ -25,6 +25,9 @@
     <string name="login_fail">登陆失败</string>
     <string name="loading">登陆中...</string>
 
+    <string name="data_loading">数据加载中...</string>
+    <string name="data_loaded">数据加载完毕</string>
+
     <!--个人界面-->
     <string name="user_pic">头 像</string>
     <string name="user_name">昵 称</string>
