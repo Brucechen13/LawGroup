@@ -19,6 +19,7 @@
     <string name="button_submit">提交</string>
 
     <string name="send_msg">发消息</string>
+    <string name="add_msg">新主题</string>
 
     <string name="login">登陆</string>
     <string name="login_success">登陆成功</string>

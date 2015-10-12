@@ -114,19 +114,15 @@ function init(mongoose){
 		  });
 	};
 
-	var addMsg = function(qq, country, province, city, road, tra_level, address,callback){
+	var addMsg = function(qq, title, content, callback){
 		User.findById(qq,function(err,user){  
 			   if(err){
 					callback(err);
 					return;
 				}
 			var msg = new Msg({user:user, 
-				content:{country:country,
-						province:province,
-						city:city,
-						road:road,
-						tra_level:tra_level,
-						address:address}});
+				content:{title:title,
+						content:content}});
 			msg.save(function(err){
 				if(err){
 					callback(err);

@@ -4,6 +4,10 @@
     android:layout_height="fill_parent"
     android:orientation="vertical" >
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="5dip">
 
     <LinearLayout
         android:layout_width="fill_parent"
@@ -30,6 +34,34 @@
             ptr:ptrAnimationStyle="flip" >
         </com.handmark.pulltorefresh.library.PullToRefreshListView>
     </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/create"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@null"
+        android:clickable="true"
+        android:layout_margin="@dimen/layout_marginLeft"
+        android:orientation="vertical"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:gravity="center">
+
+        <ImageView
+            android:layout_width="@dimen/item_button"
+            android:layout_height="@dimen/item_button"
+            android:scaleType="fitXY"
+            android:src="@mipmap/create" />
+
+        <TextView
+            style="@style/text_18"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="创建主题"/>
+    </LinearLayout>
+
+    </RelativeLayout>
 
 
 </LinearLayout>

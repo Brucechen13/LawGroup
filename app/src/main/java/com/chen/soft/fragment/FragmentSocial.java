@@ -1,5 +1,6 @@
 package com.chen.soft.fragment;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.format.DateUtils;
@@ -8,14 +9,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.chen.soft.R;
+import com.chen.soft.activity.AddMsgActivity;
+import com.chen.soft.activity.LoginActivity;
 import com.chen.soft.adapt.SocialMsgBean;
 import com.chen.soft.adapt.SocialBeansAdapter;
 import com.chen.soft.util.CommonUtil;
+import com.chen.soft.util.LoginUtil;
 import com.chen.soft.util.ParseUtil;
 import com.chen.soft.util.ServerUtil;
 import com.google.gson.JsonArray;
@@ -40,6 +45,8 @@ public class FragmentSocial extends BaseFragment {
     private SocialBeansAdapter adapter;
     private int offset = 0;
 
+    private LinearLayout addMsg;
+
     private Date date;
     private static SimpleDateFormat sfd = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
@@ -62,10 +69,23 @@ public class FragmentSocial extends BaseFragment {
 
         msgList = (PullToRefreshListView) getView().findViewById(R.id.msgList);
         hint = (TextView)getView().findViewById(R.id.hint);
+        addMsg = (LinearLayout)getView().findViewById(R.id.create);
 
         adapter = new SocialBeansAdapter(getView().getContext(),
                 getMsgs(null));
         initPullToRefreshListView(msgList, adapter);
+
+
+        addMsg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(LoginUtil.isLogin){
+                    startActivity(new Intent(FragmentSocial.this.getActivity(), AddMsgActivity.class));
+                }else{
+                    startActivity(new Intent(FragmentSocial.this.getActivity(), LoginActivity.class));
+                }
+            }
+        });
 
     }
 

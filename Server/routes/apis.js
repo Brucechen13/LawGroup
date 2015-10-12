@@ -86,7 +86,7 @@ router.get('/usermsgs', function(req, res){//获取用户的所有交通信息
 });
 
 router.post('/addmsg', function(req, res){//添加新的交通信息
-	models.Account.addMsg(req.param('qq'), req.param('country'), req.param('province'), req.param('city'), req.param('road'), req.param('tra_level'), req.param('address'),function(err){
+	models.Account.addMsg(req.param('qq'), req.param('title'), req.param('content'), function(err){
 		if(err == null){
 			res.json({"suc":"true"});
 			return;

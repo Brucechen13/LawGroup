@@ -88,6 +88,7 @@ public class LoginActivity extends TitleActivity implements View.OnClickListener
     @Override
     public void onClick(View v) {
         // TODO Auto-generated method stub
+        super.onClick(v);
         if(v.getId() == R.id.login){
             onClickLogin();
         }
