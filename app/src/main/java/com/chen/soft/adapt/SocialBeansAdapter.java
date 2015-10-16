@@ -1,6 +1,9 @@
 package com.chen.soft.adapt;
 
 import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +14,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.chen.soft.R;
+import com.chen.soft.activity.MsgDetailActivity;
 
 import java.util.List;
 
@@ -57,7 +61,7 @@ public class SocialBeansAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
         final ViewHolder holder;
         if (convertView == null) {
             holder = new ViewHolder();
@@ -98,6 +102,7 @@ public class SocialBeansAdapter extends BaseAdapter {
             @Override
             public void onClick(View v) {
                 // TODO Auto-generated method stub
+                Log.d("info", "into user");
 //                Intent intent = new Intent(mContext, UserInfoView.class);
 //                intent.putExtra("userid", data.get(position).getUserId());
 //                mContext.startActivity(intent);
@@ -108,24 +113,25 @@ public class SocialBeansAdapter extends BaseAdapter {
             @Override
             public void onClick(View v) {
                 // TODO Auto-generated method stub
-//                Intent intent = new Intent(mContext, TraffficMsgDetail.class);
-//                Bundle bundle = new Bundle();
-//                bundle.putParcelable("msg", data.get(position));
-//                Log.d("traffic", "push msg:" + data.get(position).getUserName());
-//                intent.putExtras(bundle);
-//                mContext.startActivity(intent);
+                Log.d("info", "into");
+                Intent intent = new Intent(mContext, MsgDetailActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putParcelable("msg", data.get(position));
+                intent.putExtras(bundle);
+                mContext.startActivity(intent);
             }
         };
 
         SocialMsgBean bean = data.get(position);
         holder.username.setText(bean.getUserName());
         holder.time.setText(bean.getUpTime());
-        holder.content.setText(bean.getContent());
+        holder.content.setText(bean.getTitle());
         holder.good_num.setText(bean.getUpCount());
         holder.comment_num.setText(bean.getCmCount());
 
 
-        holder.username.setOnClickListener(userInfoListener);
+        holder.content.setOnClickListener(userInfoListener);
+        holder.username.setOnClickListener(infoDetailListener);
 
 
         holder.comgood_iv.setOnClickListener(new View.OnClickListener() {

@@ -71,6 +71,8 @@
         <activity android:name=".activity.UserInfoActivity"/>
         <activity android:name=".activity.SettingActivity"/>
         <activity android:name=".activity.LoginActivity"/>
+        <activity android:name=".activity.AddMsgActivity"/>
+        <activity android:name=".activity.MsgDetailActivity"/>
     </application>
 
 </manifest>

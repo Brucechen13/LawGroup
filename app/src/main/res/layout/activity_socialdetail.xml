@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:descendantFocusability="afterDescendants"
+    android:layout_height="fill_parent"
+    android:descendantFocusability="blocksDescendants"
     android:orientation="horizontal">
 
     <RelativeLayout
@@ -21,13 +21,17 @@
 
     </RelativeLayout>
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="@dimen/layout_marginLeft"
+        android:layout_marginRight="@dimen/layout_marginRight">
+
 
     <LinearLayout
+        android:id="@+id/layou3"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/layout_marginLeft"
-        android:layout_marginRight="@dimen/layout_marginRight"
-        android:layout_marginBottom="@dimen/layout_marginRight"
         android:orientation="vertical"
         >
 
@@ -203,9 +207,55 @@
                 </RelativeLayout>
             </RelativeLayout>
         </FrameLayout>
-
-
     </LinearLayout>
 
+        <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_marginTop="@dimen/layout_marginRight"
+        android:layout_below="@+id/layou3"
+        android:background="#e6e6e6"
+        android:orientation="vertical" >
+
+        <com.handmark.pulltorefresh.library.PullToRefreshListView
+            xmlns:ptr="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/commentsList"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:divider="@mipmap/divider"
+            android:dividerHeight="@dimen/item_sampleMargin"
+            android:fadingEdge="none"
+            android:fastScrollEnabled="false"
+            android:footerDividersEnabled="false"
+            android:headerDividersEnabled="false"
+            android:smoothScrollbar="true"
+            ptr:ptrAnimationStyle="flip" >
+        </com.handmark.pulltorefresh.library.PullToRefreshListView>
+    </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="@dimen/layout_marginRight">
+
+            <EditText
+                android:id="@+id/text"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:enabled="true"
+                android:hint="请输入评论" />
+
+            <Button
+                android:id="@+id/send"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:text="评论" />
+        </RelativeLayout>
+
+    </RelativeLayout>
 
 </LinearLayout>

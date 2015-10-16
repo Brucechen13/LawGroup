@@ -202,7 +202,8 @@ public class FragmentSocial extends BaseFragment {
                     jo.get("user").getAsJsonObject().get("_id").getAsString(),
                     jo.get("user").getAsJsonObject().get("name").getAsString(),
                     jo.get("user").getAsJsonObject().get("toupic").getAsString(),
-                    jo.get("content").getAsJsonObject().get("title").getAsString(),
+                    jo.get("msg").getAsJsonObject().get("title").getAsString(),
+                    jo.get("msg").getAsJsonObject().get("content").getAsString(),
                     times[0],
                     jo.get("upCount").getAsString(),
                     jo.get("ctCount").getAsString());

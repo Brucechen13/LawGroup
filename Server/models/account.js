@@ -64,6 +64,19 @@ function init(mongoose){
 	});
 	var Comment = mongoose.model('comment', comment);
 	
+	var sample = new Schema({
+		msg:{
+			title:{type:String},
+			content:{type:String}
+		},
+		time:{type:Date, default: Date.now},
+		user:{type:String, ref:'User'},
+		upCount:{type:Number, default:0},
+		ctCount:{type:Number, default:0},
+		comments:[{type:ObjectId, ref:'comment'}]
+	});
+	var Comment = mongoose.model('comment', comment);
+	
 	var Task = new Schema({
 		user:{type:String, ref:'User'},
 		content:{type:String},
@@ -121,7 +134,7 @@ function init(mongoose){
 					return;
 				}
 			var msg = new Msg({user:user, 
-				content:{title:title,
+				msg:{title:title,
 						content:content}});
 			msg.save(function(err){
 				if(err){

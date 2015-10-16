@@ -63,7 +63,7 @@ public class AddMsgActivity  extends TitleActivity implements View.OnClickListen
     }
 
     private void pushMsg(){
-        Log.i("traffic", "upload traffic msg");
+        Log.i("info", "upload traffic msg");
         JsonObject json = new JsonObject();
         json.addProperty("qq", LoginUtil.user.getId());
         json.addProperty("title", title.getText().toString());
