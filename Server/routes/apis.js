@@ -117,6 +117,38 @@ router.get('/getrecentmsgs', function(req, res){//获取最新上传的交通信
 	});
 });
 
+router.post('/addsample', function(req, res){//添加新的交通信息
+	models.Account.addSample(req.param('qq'), req.param('title'), req.param('content'), function(err){
+		if(err == null){
+			res.json({"suc":"true"});
+			return;
+		}
+		res.json({"suc":err});
+	});
+});
+
+router.get('/getsamples', function(req, res){//获取上传的交通信息，可分页
+	models.Account.allSamples(req.param('skip'), function(doc){
+		if(doc == null){
+			res.json({"suc":"false"});
+			return;
+		}
+		res.json(doc);	
+	});
+});
+
+router.get('/getrecentsamples', function(req, res){//获取最新上传的交通信息
+	console.log(req.param('date'));
+	var date = new Date(req.param('date'));
+	models.Account.recentSamples(date,function(doc){
+		if(doc == null){
+			res.json({"suc":"false"});
+			return;
+		}
+		res.json(doc);	
+	});
+});
+
 router.get('/addUpMsg', function(req, res){//点赞
 	models.Account.addUpMsg(req.param('msg'), function(err){
 		if(err == null){

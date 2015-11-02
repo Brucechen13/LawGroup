@@ -1,29 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="5dip">
 
-        <com.handmark.pulltorefresh.library.PullToRefreshListView
-            xmlns:ptr="http://schemas.android.com/apk/lib/com.chen.soft"
-            android:id="@+id/msgList"
+        <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:divider="@mipmap/divider"
-            android:dividerHeight="@dimen/table_margin"
-            android:fadingEdge="none"
-            android:fastScrollEnabled="false"
-            android:footerDividersEnabled="false"
-            android:headerDividersEnabled="false"
-            android:smoothScrollbar="true"
-            ptr:ptrAnimationStyle="flip" >
-        </com.handmark.pulltorefresh.library.PullToRefreshListView>
+            android:layout_marginTop="5dip"
+            android:orientation="vertical" >
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/hint"/>
+
+            <com.handmark.pulltorefresh.library.PullToRefreshListView
+                xmlns:ptr="http://schemas.android.com/apk/lib/com.chen.soft"
+                android:id="@+id/msgList"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:divider="@mipmap/divider"
+                android:dividerHeight="@dimen/table_margin"
+                android:fadingEdge="none"
+                android:fastScrollEnabled="false"
+                android:footerDividersEnabled="false"
+                android:headerDividersEnabled="false"
+                android:smoothScrollbar="true"
+                ptr:ptrAnimationStyle="flip" >
+            </com.handmark.pulltorefresh.library.PullToRefreshListView>
+        </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/create"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@null"
@@ -36,7 +49,6 @@
             android:gravity="center">
 
             <ImageView
-                android:id="@+id/create"
                 android:layout_width="@dimen/item_button"
                 android:layout_height="@dimen/item_button"
                 android:scaleType="fitXY"
@@ -50,5 +62,6 @@
         </LinearLayout>
 
     </RelativeLayout>
+
 
 </LinearLayout>

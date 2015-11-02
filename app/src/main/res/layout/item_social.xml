@@ -2,7 +2,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:descendantFocusability="afterDescendants"
     android:orientation="horizontal">
 
     <RelativeLayout
@@ -65,26 +64,17 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/table_margin"
             android:background="#e6e6e6"
-            android:orientation="vertical" >
+            android:orientation="vertical">
 
-            <RelativeLayout
-                android:layout_width="fill_parent"
+            <TextView
+                android:id="@+id/content"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
                 android:layout_margin="@dimen/layout_marginRight"
-
-                >
-
-                <TextView
-                    android:id="@+id/content"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_marginLeft="5dip"
-                    android:text="今天天气很好"
-                    android:textColor="#404040"
-                    android:textSize="16.0sp" />
-
-            </RelativeLayout>
+                android:text="今天天气很好"
+                android:textColor="#404040"
+                android:textSize="16.0sp" />
 
         </LinearLayout>
 
@@ -197,7 +187,7 @@
                         android:layout_centerVertical="true"
                         android:layout_toRightOf="@id/good_img"
                         android:scaleType="fitXY"
-                        android:src="@drawable/comment_seletor"
+                        android:src="@drawable/comment_selector"
 
                         />
                 </RelativeLayout>

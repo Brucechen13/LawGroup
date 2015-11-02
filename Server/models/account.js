@@ -35,6 +35,7 @@ function init(mongoose){
 		gender:{type:String},
 		score:{type:Number,default: 0},
 		msgs:[{type:ObjectId, ref:'Msg'}],
+		samples:[{type:ObjectId, ref:'Sample'}],
 		comments:[{type:ObjectId, ref:'comment'}],
 		friends:[{type:String, ref:'User'}],
 		tasks:[{type:ObjectId, ref:'Task'}]
@@ -75,7 +76,7 @@ function init(mongoose){
 		ctCount:{type:Number, default:0},
 		comments:[{type:ObjectId, ref:'comment'}]
 	});
-	var Comment = mongoose.model('comment', comment);
+	var Sample = mongoose.model('sample', sample);
 	
 	var Task = new Schema({
 		user:{type:String, ref:'User'},
@@ -143,6 +144,28 @@ function init(mongoose){
 				}
 				user.score += MsgScore;//增加积分
 				user.msgs.push(msg);
+				user.save();
+				callback(null);
+			});
+		});
+	};
+	
+	var addSample = function(qq, title, content, callback){
+		User.findById(qq,function(err,user){  
+			   if(err){
+					callback(err);
+					return;
+				}
+			var sample = new Sample({user:user, 
+				msg:{title:title,
+						content:content}});
+			sample.save(function(err){
+				if(err){
+					callback(err);
+					return;
+				}
+				user.score += MsgScore;//增加积分
+				user.samples.push(sample);
 				user.save();
 				callback(null);
 			});
@@ -298,6 +321,36 @@ function init(mongoose){
 		});
 	};
 	
+	var userSamples = function(qq, skip, callback){
+		User.findById(qq, "samples").populate({path: 'samples',
+		options: {limit: 10, skip: skip}}).exec(function(err, doc){
+			if(err){
+				console.log(err);
+			}
+			callback(doc);
+		});
+	};
+	
+	var allSamples = function(skip, callback){
+		Sample.find().skip(skip).limit(10).sort({'time':-1}).populate(
+			{path: 'user', select: '_id name toupic'}).exec(function(err, doc){
+			if(err){
+				console.log(err);
+			}
+			callback(doc);
+		});
+	};
+
+	var recentSamples = function(date, callback){
+		Sample.find().where('time').gt(date).sort({'time':-1})
+			.populate({path: 'user', select: '_id name'}).exec(function(err, doc){
+			if(err){
+				console.log(err);
+			}
+			callback(doc);
+		});
+	};
+	
 	var MsgComments = function(msg, skip, callback){
 		Msg.findById(msg, "comments").populate({path: 'comments ',
 		options: {limit: 10, skip: skip,sort: {time: -1}}}).exec(function(err, doc){
@@ -306,7 +359,17 @@ function init(mongoose){
 			}
 			callback(doc);
 		});
-};
+	};
+	
+	var recentComments = function(date, callback){
+		Msg.find().where('time').gt(date).sort({'time':-1})
+			.populate({path: 'user', select: '_id name toupic'}).exec(function(err, doc){
+			if(err){
+				console.log(err);
+			}
+			callback(doc);
+		});
+	};
 
 	var addTasks = function(sourceUser, type, content, destUser, callback){
 		if(destUser!=null && sourceUser._id == destUser._id){
@@ -415,10 +478,14 @@ function init(mongoose){
 		newUser:newUser,//添加新用户
 		updateUser:updateUser,//更新用户信息
 		userInfo:userInfo,//查看用户信息
-		addMsg:addMsg,//上传交通信息
-		userMsgs:userMsgs,//查看用户上传的所有交通信息
-		allMsgs:allMsgs,//查看交通信息
-		recentMsgs:recentMsgs,//查看最新的交通信息
+		addMsg:addMsg,//上传社区主题信息
+		userMsgs:userMsgs,//查看用户上传的所有社区主题信息
+		allMsgs:allMsgs,//查看社区主题信息
+		recentMsgs:recentMsgs,//查看最新的社区主题信息
+		addSample:addSample,//上传案例信息
+		userSamples:userSamples,//查看用户上传的所有案例信息信息
+		allSamples:allSamples,//查看案例信息信息
+		recentSamples:recentSamples,//查看最新的案例信息信息
 		addComment:addComment,//添加用户评论
 		addUpMsg:addUpMsg,//添加消息点赞
 		MsgComments:MsgComments,//查看交通信息的评论

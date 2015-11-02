@@ -5,17 +5,23 @@ package com.chen.soft.adapt;
  */
 public class SampleBean {
 
+    private String id;
+    private String userId;
     private String content;
+    String title;
     private String author;
     private String time;
     private String cmCount;
 
-    public SampleBean(String content, String author, String time, String cmCount){
+    public SampleBean(String id, String userId, String author,  String title, String content, String time, String cmCount){
         super();
         this.content = content;
         this.author = author;
         this.time = time;
         this.cmCount = cmCount;
+        this.id = id;
+        this.userId = userId;
+        this.title = title;
     }
     public SampleBean(){
         this.content = "aaa";

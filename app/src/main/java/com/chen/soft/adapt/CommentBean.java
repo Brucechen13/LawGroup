@@ -9,6 +9,15 @@ public class CommentBean {
     private String userId;
     private String userName;
     private String content;
+    private String time;
+
+    public CommentBean(String id, String userId, String userName, String content, String time){
+        this.id = id;
+        this.userId = userId;
+        this.userName = userName;
+        this.content = content;
+        this.time = time;
+    }
 
     public String getId() {
         return id;
@@ -40,5 +49,13 @@ public class CommentBean {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
     }
 }

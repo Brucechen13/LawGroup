@@ -107,4 +107,12 @@ public class SampleBeansAdapter extends BaseAdapter {
 
         return convertView;
     }
+
+    public void addNews(List<SampleBean> addNews) {
+        data.addAll(addNews);
+    }
+
+    public void addFirstNews(List<SampleBean> addNews) {
+        data.addAll(0, addNews);
+    }
 }

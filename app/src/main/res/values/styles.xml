@@ -31,20 +31,20 @@
         <item name="android:singleLine">true</item>
         <item name="android:background">@null</item>
         <item name="android:textColor">@color/text_service_color</item>
-        <item name="android:textSize">14dp</item>
+        <item name="android:textSize">14sp</item>
     </style>
 
     <style name="text_black_18">
-        <item name="android:textSize">18dp</item>
+        <item name="android:textSize">18sp</item>
         <item name="android:textColor">@android:color/black</item>
     </style>
 
     <style name="text_18">
-        <item name="android:textSize">18dp</item>
+        <item name="android:textSize">18sp</item>
     </style>
 
     <style name="text_userItem">
-        <item name="android:textSize">20dp</item>
+        <item name="android:textSize">20sp</item>
         <item name="android:textColor">#202020</item>
     </style>
 
@@ -52,21 +52,33 @@
         <item name="android:background">@color/table_background</item>
     </style>
 
+    <style name="text_content">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/text_item_color</item>
+    </style>
+
+    <style name="text_comment">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/text_item_color</item>
+    </style>
+
     <!--法律item -->
     <style name="text_law">
-        <item name="android:textSize">18dp</item>
+        <item name="android:textSize">18sp</item>
         <item name="android:textColor">@color/text_item_color</item>
     </style>
 
     <!-- 案例item -->
     <style name="text_sample_title">
-        <item name="android:textSize">25dp</item>
+        <item name="android:textSize">25sp</item>
         <item name="android:textColor">@color/text_item_color</item>
     </style>
 
     <style name="text_sample">
-        <item name="android:textSize">18dp</item>
+        <item name="android:textSize">18sp</item>
         <item name="android:textColor">@color/gray</item>
     </style>
+
+
 
 </resources>

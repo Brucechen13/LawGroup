@@ -102,7 +102,7 @@ public class SocialBeansAdapter extends BaseAdapter {
             @Override
             public void onClick(View v) {
                 // TODO Auto-generated method stub
-                Log.d("info", "into user");
+                Log.d("info", "into user" + v.toString());
 //                Intent intent = new Intent(mContext, UserInfoView.class);
 //                intent.putExtra("userid", data.get(position).getUserId());
 //                mContext.startActivity(intent);
@@ -131,7 +131,9 @@ public class SocialBeansAdapter extends BaseAdapter {
 
 
         holder.content.setOnClickListener(userInfoListener);
-        holder.username.setOnClickListener(infoDetailListener);
+        holder.userimg_iv.setOnClickListener(userInfoListener);
+        //holder.username.setOnClickListener(userInfoListener);
+        holder.content_ll.setOnClickListener(infoDetailListener);
 
 
         holder.comgood_iv.setOnClickListener(new View.OnClickListener() {

@@ -79,10 +79,8 @@ public class FragmentSocial extends BaseFragment {
         addMsg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(LoginUtil.isLogin){
+                if(LoginUtil.Login(FragmentSocial.this.getActivity())){
                     startActivity(new Intent(FragmentSocial.this.getActivity(), AddMsgActivity.class));
-                }else{
-                    startActivity(new Intent(FragmentSocial.this.getActivity(), LoginActivity.class));
                 }
             }
         });
@@ -210,6 +208,6 @@ public class FragmentSocial extends BaseFragment {
             ret.add(msg);
         }
         return ret;
-}
+    }
 
 }

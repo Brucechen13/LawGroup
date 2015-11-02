@@ -1,9 +1,16 @@
 package com.chen.soft.adapt;
 
 import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.TextView;
+
+import com.chen.soft.R;
 
 import java.util.List;
 
@@ -19,23 +26,77 @@ public class CommentsBeanAdapter extends BaseAdapter {
         this.data = list;
         this.mContext = context;
     }
+
+    public class ViewHolder {
+        public TextView username;
+        public TextView time;
+        public TextView content;
+    }
     @Override
     public int getCount() {
-        return 0;
+        return data.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return null;
+        return position;
     }
 
     @Override
     public long getItemId(int position) {
-        return 0;
+        return position;
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        return null;
+    public View getView(final int position, View convertView, ViewGroup parent) {
+        final ViewHolder holder;
+        if (convertView == null) {
+            holder = new ViewHolder();
+
+            convertView = LayoutInflater.from(mContext).inflate(
+                    R.layout.item_comment, parent, false);
+            holder.username = (TextView) convertView
+                    .findViewById(R.id.username);
+            holder.time = (TextView) convertView
+                    .findViewById(R.id.time);
+            holder.content = (TextView) convertView
+                    .findViewById(R.id.content);
+
+            convertView.setTag(holder);
+            convertView.setId(position);
+        } else {
+            holder = (ViewHolder) convertView.getTag();
+        }
+
+        View.OnClickListener userInfoListener = new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+                Log.d("info", "into user" + v.toString());
+//                Intent intent = new Intent(mContext, UserInfoView.class);
+//                intent.putExtra("userid", data.get(position).getUserId());
+//                mContext.startActivity(intent);
+            }
+        };
+
+        CommentBean bean = data.get(position);
+        holder.username.setText(bean.getUserName());
+        holder.time.setText(bean.getTime());
+        holder.content.setText(bean.getContent());
+
+
+        holder.username.setOnClickListener(userInfoListener);
+
+        return convertView;
+    }
+
+
+    public void addNews(List<CommentBean> addNews) {
+        data.addAll(addNews);
+    }
+
+    public void addFirstNews(List<CommentBean> addNews) {
+        data.addAll(0, addNews);
     }
 }

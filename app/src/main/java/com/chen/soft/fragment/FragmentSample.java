@@ -1,18 +1,32 @@
 package com.chen.soft.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.chen.soft.R;
+import com.chen.soft.activity.AddSampleActivity;
 import com.chen.soft.adapt.SampleBean;
 import com.chen.soft.adapt.SampleBeansAdapter;
+import com.chen.soft.util.LoginUtil;
+import com.chen.soft.util.ParseUtil;
+import com.chen.soft.util.ServerUtil;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
+import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.ion.Ion;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -49,30 +63,142 @@ public class FragmentSample extends BaseFragment{
         super.onActivityCreated(savedInstanceState);
 
         msgList = (PullToRefreshListView) getView().findViewById(R.id.msgList);
+        hint = (TextView)getView().findViewById(R.id.hint);
 
         adapter = new SampleBeansAdapter(getView().getContext(),
                 getMsgs(null));
         initPullToRefreshListView(msgList, adapter);
+
+
+        getView().findViewById(R.id.create).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (LoginUtil.Login(FragmentSample.this.getActivity())) {
+                    startActivity(new Intent(FragmentSample.this.getActivity(), AddSampleActivity.class));
+                }
+            }
+        });
 
     }
 
     private void initPullToRefreshListView(PullToRefreshListView msgList,
                                            BaseAdapter adapter) {
         // TODO Auto-generated method stub
-        Log.d("traffic", "create list");
+        Log.d("info", "create list");
         msgList.setMode(PullToRefreshBase.Mode.BOTH);
-        //msgList.setOnRefreshListener(new MyOnRefreshListener2(msgList));
+        msgList.setOnRefreshListener(new MyOnRefreshListener2(msgList));
         msgList.setAdapter(adapter);
         date = new Date();
+        loadData();
     }
 
-    public ArrayList<SampleBean> getMsgs(Object res){
+    private void loadData(){
+        hint.setText(R.string.data_loading);
+        Ion.with(FragmentSample.this)
+                .load(String.format("%s?skip=%s", ServerUtil.getSamplesUrl, offset))
+                .asJsonArray().setCallback(new FutureCallback<JsonArray>() {
+
+            @Override
+            public void onCompleted(Exception arg0, JsonArray arg1) {
+                // TODO Auto-generated method stub
+                if (arg0 != null) {
+                    Log.d("info", arg0.toString());
+                    Toast.makeText(getActivity(), "请检查网络",
+                            Toast.LENGTH_SHORT).show();
+                } else if (arg1.size() == 0) {
+                    Toast.makeText(getActivity(), "已经没有数据啦",
+                            Toast.LENGTH_SHORT).show();
+                } else {
+                    adapter.addNews(getMsgs(arg1));
+                    offset += arg1.size();
+                }
+                adapter.notifyDataSetChanged();
+                msgList.onRefreshComplete();
+                hint.setText(R.string.data_loaded);
+            }
+        });
+    }
+
+    private void loadNewestData(){
+        hint.setText(R.string.data_loading);
+        String time = sfd.format(date);
+        time = ParseUtil.ParseUrl(time);
+        Ion.with(FragmentSample.this)
+                .load(String.format("%s?date=%s", ServerUtil.getNewestSamplesUrl, time))
+                .asJsonArray().setCallback(new FutureCallback<JsonArray>() {
+
+            @Override
+            public void onCompleted(Exception arg0, JsonArray arg1) {
+                // TODO Auto-generated method stub
+                if (arg0 != null) {
+                    Log.d("info", arg0.toString());
+                    Toast.makeText(getActivity(), "请检查网络",
+                            Toast.LENGTH_SHORT).show();
+                } else if (arg1.size() == 0) {
+                    Toast.makeText(getActivity(), "已经没有数据啦",
+                            Toast.LENGTH_SHORT).show();
+                } else {
+                    date = new Date();
+                    offset += arg1.size();
+                    adapter.addFirstNews(getMsgs(arg1));
+                }
+                adapter.notifyDataSetChanged();
+                msgList.onRefreshComplete();
+                hint.setText(R.string.data_loaded);
+            }
+        });
+    }
+
+    class MyOnRefreshListener2 implements PullToRefreshBase.OnRefreshListener2<ListView> {
+
+        private PullToRefreshListView mPtflv;
+
+        public MyOnRefreshListener2(PullToRefreshListView ptflv) {
+            this.mPtflv = ptflv;
+        }
+
+        @Override
+        public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
+            // 下拉刷新
+            String label = DateUtils.formatDateTime(getView().getContext(),
+                    System.currentTimeMillis(), DateUtils.FORMAT_SHOW_TIME
+                            | DateUtils.FORMAT_SHOW_DATE
+                            | DateUtils.FORMAT_ABBREV_ALL);
+
+            refreshView.getLoadingLayoutProxy().setLastUpdatedLabel(label);
+            loadNewestData();
+
+        }
+
+        @Override
+        public void onPullUpToRefresh(PullToRefreshBase<ListView> refreshView) {
+            // 上拉加载
+            // new GetNewsTask(mPtflv).execute();
+            loadData();
+        }
+
+    }
+
+
+    public ArrayList<SampleBean> getMsgs(JsonArray res) {
         ArrayList<SampleBean> ret = new ArrayList<SampleBean>();
-        for (int i = 0; i < 10; i++) {
-            SampleBean msg = new SampleBean();
+        if(res == null){
+            return ret;
+        }
+        for (int i = 0; i < res.size(); i++) {
+            JsonElement je = res.get(i);
+            JsonObject jo = je.getAsJsonObject();
+            Date date = ParseUtil.parseISODate(jo.get("time").getAsString());
+            String[] times = date.toLocaleString().split(" ");
+            SampleBean msg = new SampleBean(jo.get("_id").getAsString(),
+                    jo.get("user").getAsJsonObject().get("_id").getAsString(),
+                    jo.get("user").getAsJsonObject().get("name").getAsString(),
+                    jo.get("msg").getAsJsonObject().get("title").getAsString(),
+                    jo.get("msg").getAsJsonObject().get("content").getAsString(),
+                    times[0],
+                    jo.get("upCount").getAsString());
             ret.add(msg);
         }
         return ret;
-
     }
 }

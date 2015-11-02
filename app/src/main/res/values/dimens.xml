@@ -10,6 +10,7 @@
 <dimen name="layout_marginLeft">12dp</dimen>
 <dimen name="layout_marginRight">10dp</dimen>
 <dimen name="drawable_padding">6dp</dimen>
+    <dimen name="layout_marginTop">5dp</dimen>
 
     <dimen name="user_picHeight">80dp</dimen>
     <dimen name="user_picSize">60dp</dimen>
@@ -24,4 +25,5 @@
     <dimen name="item_sampleMargin">10dp</dimen>
     <dimen name="item_margin">5dp</dimen>
     <dimen name="item_button">25dp</dimen>
+    <dimen name="button_Margin">5dp</dimen>
 </resources>

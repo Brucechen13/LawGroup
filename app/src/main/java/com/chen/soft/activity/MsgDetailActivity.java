@@ -15,10 +15,12 @@ import com.chen.soft.R;
 import com.chen.soft.adapt.CommentBean;
 import com.chen.soft.adapt.CommentsBeanAdapter;
 import com.chen.soft.adapt.SocialMsgBean;
+import com.chen.soft.util.LoginUtil;
 import com.chen.soft.util.ParseUtil;
 import com.chen.soft.util.ServerUtil;
 import com.chen.soft.util.UIShowUtil;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
@@ -46,7 +48,6 @@ public class MsgDetailActivity extends TitleActivity implements View.OnClickList
 
     private ImageView userimg_iv;
     private TextView username;
-    private TextView contenttime;
     private TextView time;
     private TextView content;
     private TextView area;
@@ -78,10 +79,12 @@ public class MsgDetailActivity extends TitleActivity implements View.OnClickList
 
         msg = (SocialMsgBean)getIntent().getParcelableExtra("msg");
         Log.d("info", "getMseeage:" + msg.getUserName());
-        //setTitle(msg.get);
+        setTitle(msg.getTitle());
 
         username = (TextView) this
                 .findViewById(R.id.username);
+        userimg_iv = (ImageView) this
+                .findViewById(R.id.user_img);
         time = (TextView) this
                 .findViewById(R.id.time);
         content = (TextView) this
@@ -105,21 +108,12 @@ public class MsgDetailActivity extends TitleActivity implements View.OnClickList
 
         text=(EditText)this.findViewById(R.id.text);
 
-//        username.setText(msg.getUserName());
-//        contenttime.setText(msg.getContentTime());
-//        time.setText(msg.getTime());
-//        content.setText("在"+msg.getContent());
-//        area.setText(msg.getPlace());
-//        good_num.setText(msg.getGoodNum());
-//        comment_num.setText(msg.getCommentNum());
-//        username.setText(msg.getUserName());
-//        contenttime.setText(msg.getContentTime());
-//        time.setText(msg.getTime());
-//        content.setText("在"+msg.getContent());
-//        area.setText(msg.getPlace());
-//        good_num.setText(msg.getGoodNum());
-//        comment_num.setText(msg.getCommentNum());
-
+        username.setText(msg.getUserName());
+        time.setText(msg.getUpTime());
+        content.setText(msg.getContent());
+        good_num.setText(msg.getUpCount());
+        comment_num.setText(msg.getCmCount());
+        username.setText(msg.getUserName());
         Ion.with(this)
                 .load(msg.getUserPic())
                 .withBitmap()
@@ -130,7 +124,7 @@ public class MsgDetailActivity extends TitleActivity implements View.OnClickList
             public void onCompleted(Exception arg0, ImageView arg1) {
                 // TODO Auto-generated method stub
                 if(arg0 != null){
-                    Log.d("traffic", arg0.toString());
+                    Log.d("info", arg0.toString());
                 }
             }
 
@@ -165,25 +159,24 @@ public class MsgDetailActivity extends TitleActivity implements View.OnClickList
             @Override
             public void onClick(View v) {
                 // TODO Auto-generated method stub
-                Log.i("traffic", "good num");
-//                String num = msg.getGoodNum();
-//                msg.setGoodNum(String.valueOf(Integer.parseInt(num)+1));
-//                TraffficMsgDetail.this.good_num.setText(msg.getGoodNum());
-//                TraffficMsgDetail.this.good_img.setVisibility(View.GONE);
-//                Ion.with(TraffficMsgDetail.this)
-//                        .load(String.format("%s?msg=%s",ServerUtil.addUpMsgUrl,
-//                                msg.getId())).asJsonObject()
-//                        .setCallback(new FutureCallback<JsonObject>() {
-//
-//                            @Override
-//                            public void onCompleted(Exception arg0, JsonObject arg1) {
-//                                // TODO Auto-generated method stub
-//                                if(arg0!=null || !"true".equals(arg1.get("toupic").getAsString())){
-//                                    Log.i("traffic", "failed");
-//                                }
-//                            }
-//
-//                        });
+                String num = msg.getUpCount();
+                msg.setUpCount(String.valueOf(Integer.parseInt(num) + 1));
+                MsgDetailActivity.this.good_num.setText(msg.getUpCount());
+                MsgDetailActivity.this.comgoodhandle.setVisibility(View.VISIBLE);
+                Ion.with(MsgDetailActivity.this)
+                        .load(String.format("%s?msg=%s",ServerUtil.addUpMsgUrl,
+                                msg.getId())).asJsonObject()
+                        .setCallback(new FutureCallback<JsonObject>() {
+
+                            @Override
+                            public void onCompleted(Exception arg0, JsonObject arg1) {
+                                // TODO Auto-generated method stub
+                                if(arg0!=null || !"true".equals(arg1.get("suc").getAsString())){
+                                    Log.i("info", "failed");
+                                }
+                            }
+
+                        });
             }
         });
 
@@ -221,7 +214,7 @@ public class MsgDetailActivity extends TitleActivity implements View.OnClickList
             public void onCompleted(Exception arg0, JsonObject arg1) {
                 // TODO Auto-generated method stub
                 if (arg0 != null) {
-                    Log.d("traffic", arg0.toString());
+                    Log.d("info", arg0.toString());
                     UIShowUtil.toastMessage(MsgDetailActivity.this, "请检查网络");
                     commentsList.onRefreshComplete();
                     return;
@@ -232,8 +225,8 @@ public class MsgDetailActivity extends TitleActivity implements View.OnClickList
                     commentsList.onRefreshComplete();
                     return;
                 }
-                Log.d("traffic", comments.toString());
-                //adapter.addNews(getComments(comments));
+                Log.d("info", comments.toString());
+                adapter.addNews(getComments(comments));
                 adapter.notifyDataSetChanged();
                 commentsList.onRefreshComplete();
                 offset+=comments.size();
@@ -245,7 +238,7 @@ public class MsgDetailActivity extends TitleActivity implements View.OnClickList
     private void loadNewestData(){
         String time = sfd.format(date);
         time = ParseUtil.ParseUrl(time);
-        Log.d("traffic", time);
+        Log.d("info", time);
         Ion.with(MsgDetailActivity.this)
                 .load(String.format("%s?msg=%s&date=%s", ServerUtil.getCommentsUrl, msg.getId(),
                         time))
@@ -255,7 +248,6 @@ public class MsgDetailActivity extends TitleActivity implements View.OnClickList
             public void onCompleted(Exception arg0, JsonObject arg1) {
                 // TODO Auto-generated method stub
                 if (arg0 != null) {
-                    Log.d("traffic", arg0.toString());
                     UIShowUtil.toastMessage(MsgDetailActivity.this, "请检查网络");
                     commentsList.onRefreshComplete();
                     return;
@@ -266,10 +258,9 @@ public class MsgDetailActivity extends TitleActivity implements View.OnClickList
                     commentsList.onRefreshComplete();
                     return;
                 }
-                Log.d("traffic", comments.toString());
                 date = new Date();
                 offset+=comments.size();
-                //adapter.addFirstNews(getComments(comments));
+                adapter.addFirstNews(getComments(comments));
                 adapter.notifyDataSetChanged();
                 commentsList.onRefreshComplete();
             }
@@ -311,18 +302,17 @@ public class MsgDetailActivity extends TitleActivity implements View.OnClickList
         if(res == null){
             return ret;
         }
-//        CommentBean hm;
-//        for (int i = 0; i < res.size(); i++) {
-//            JsonElement je = res.get(i);
-//            JsonObject jo = je.getAsJsonObject();
-//            Log.d("traffic", jo.toString());
-//            Date date = Util.parseISODate(jo.get("time").getAsString());
-//            hm=new CommentBean(jo.get("_id").getAsString(),
-//                    msg.getId(), jo.get("user").getAsString(),
-//                    jo.get("userName").getAsString(),
-//                    jo.get("content").getAsString(), date.toLocaleString());
-//            ret.add(hm);
-//        }
+        CommentBean hm;
+        for (int i = 0; i < res.size(); i++) {
+            JsonElement je = res.get(i);
+            JsonObject jo = je.getAsJsonObject();
+            Date date = ParseUtil.parseISODate(jo.get("time").getAsString());
+            Log.d("info", date.toLocaleString());
+            hm=new CommentBean(jo.get("_id").getAsString(),jo.get("user").getAsString(),
+                    jo.get("userName").getAsString(),
+                    jo.get("content").getAsString(), date.toLocaleString());
+            ret.add(hm);
+        }
         return ret;
     }
 
@@ -334,28 +324,29 @@ public class MsgDetailActivity extends TitleActivity implements View.OnClickList
         switch (v.getId()) {
             //   Intent intent=new Intent(this, UpdateMsg.class);
             case R.id.send:
+                if(!LoginUtil.Login(this))
+                    return;
                 String cText = text.getText().toString().trim();
                 Log.d("info", cText);
-//                this.comment_num.setText(String.valueOf(Integer.parseInt(
-//                        msg.getCommentNum())+1));
-//                Ion.with(TraffficMsgDetail.this)
-//                        .load(String.format("%s?user=%s&msg=%s&content=%s",ServerUtil.addCommentUrl,
-//                                Util.userId, msg.getId(), cText)).asJsonObject()
-//                        .setCallback(new FutureCallback<JsonObject>() {
-//                            @Override
-//                            public void onCompleted(Exception arg0, JsonObject arg1) {
-//                                // TODO Auto-generated method stub
-//                                if (arg0 != null || !arg1.get("suc").getAsString().equals("true")) {
-//                                    Log.d("traffic",arg0.toString());
-//                                    Util.toastMessage(TraffficMsgDetail.this, "添加失败");
-//                                }else{
-//                                    Util.toastMessage(TraffficMsgDetail.this, "添加成功");
-//                                }
-//                                text.setText("");
-//                                text.setFocusable(false);
-//
-//                            }
-//                        });
+                this.comment_num.setText(String.valueOf(Integer.parseInt(
+                        msg.getCmCount())+1));
+                Ion.with(MsgDetailActivity.this)
+                        .load(String.format("%s?user=%s&msg=%s&content=%s",ServerUtil.addCommentUrl,
+                                LoginUtil.user.getId(), msg.getId(), cText)).asJsonObject()
+                        .setCallback(new FutureCallback<JsonObject>() {
+                            @Override
+                            public void onCompleted(Exception arg0, JsonObject arg1) {
+                                // TODO Auto-generated method stub
+                                if (arg0 != null || !arg1.get("suc").getAsString().equals("true")) {
+                                    UIShowUtil.toastMessage(MsgDetailActivity.this, "添加失败");
+                                }else{
+                                    UIShowUtil.toastMessage(MsgDetailActivity.this, "添加成功");
+                                }
+                                text.setText("");
+                                text.setFocusable(false);
+
+                            }
+                        });
                 break;
             default:
                 break;

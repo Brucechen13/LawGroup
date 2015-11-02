@@ -232,7 +232,7 @@
                         android:layout_centerVertical="true"
                         android:layout_toRightOf="@id/good_img"
                         android:scaleType="fitXY"
-                        android:src="@drawable/comment_seletor"
+                        android:src="@drawable/comment_selector"
 
                         />
                 </RelativeLayout>

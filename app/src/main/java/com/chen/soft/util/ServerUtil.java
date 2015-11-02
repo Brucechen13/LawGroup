@@ -13,6 +13,11 @@ public class ServerUtil {
     public static String addMsgUrl = url+"/addmsg";
     public static String getMsgsUrl = url+"/getmsgs";
     public static String getNewestMsgsUrl = url+"/getrecentmsgs";
+
+    public static String addSampleUrl = url+"/addsample";
+    public static String getSamplesUrl = url+"/getsamples";
+    public static String getNewestSamplesUrl = url+"/getrecentsamples";
+
     public static String addCommentUrl = url+"/addcomment";
     public static String addUpMsgUrl = url+"/addUpMsg";
     public static String getCommentsUrl = url+"/getcomments";

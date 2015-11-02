@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Debug;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -125,13 +126,11 @@ public class MainActivity extends FragmentActivity implements
 				 * BaseActivity.REQUEST_OK_LOGIN); }
 				 */
             } else if (tag.equals("settings")) {
-                if(LoginUtil.isLogin) {
+                if(LoginUtil.Login(this)) {
                     mPreviousTabIndex = mCurrentTabIndex;
                     mCurrentTabIndex = 3;
                     mTitleTextView.setText(R.string.text_tab_setting);
                     replaceFragment(FragmentUser.class);
-                }else {
-                    startActivity(new Intent(this, LoginActivity.class));
                 }
                 // 检查，如果没有登录则跳转到登录界面
 				/*

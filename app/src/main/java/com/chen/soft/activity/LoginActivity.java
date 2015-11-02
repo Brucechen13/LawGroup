@@ -123,13 +123,11 @@ public class LoginActivity extends TitleActivity implements View.OnClickListener
     }
 
     private void loginActivity(){
-        LoginActivity.this.finish();
-        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-//        Bundle bundle = new Bundle();
-//        bundle.putParcelable("user", user);
-//        intent.putExtras(bundle);
         LoginUtil.isLogin = true;
         LoginUtil.user = user;
+        LoginActivity.this.finish();
+        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+
         LoginActivity.this.startActivity(intent);
     }
 
