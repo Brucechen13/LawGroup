@@ -6,7 +6,7 @@ package com.chen.soft.util;
  */
 public class ServerUtil {
 
-    public static String url = "http://192.168.1.109:3000/api";
+    public static String url = "http://192.168.1.110:3000/api";
     public static String loginUrl = url+"/login";
     public static String newUerUrl = url+"/newuser";
     public static String updateUerUrl = url+"/updateinfo";
