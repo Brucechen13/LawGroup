@@ -74,6 +74,7 @@
         <activity android:name=".activity.AddMsgActivity"/>
         <activity android:name=".activity.AddSampleActivity"/>
         <activity android:name=".activity.MsgDetailActivity"/>
+        <activity android:name=".activity.SampleDetailActivity"/>
     </application>
 
 </manifest>

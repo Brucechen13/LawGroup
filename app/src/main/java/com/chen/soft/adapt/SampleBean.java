@@ -1,17 +1,20 @@
 package com.chen.soft.adapt;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * Created by chenchi_94 on 2015/10/7.
  */
-public class SampleBean {
+public class SampleBean  implements Parcelable {
 
     private String id;
     private String userId;
-    private String content;
-    String title;
     private String author;
     private String time;
     private String cmCount;
+    private String title;
+    private String content;
 
     public SampleBean(String id, String userId, String author,  String title, String content, String time, String cmCount){
         super();
@@ -46,6 +49,30 @@ public class SampleBean {
         this.author = author;
     }
 
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
     public String getTime() {
         return time;
     }
@@ -60,5 +87,50 @@ public class SampleBean {
 
     public void setCmCount(String cmCount) {
         this.cmCount = cmCount;
+    }
+
+    @Override
+    public int describeContents() {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        // TODO Auto-generated method stub
+        dest.writeString(id);
+        dest.writeString(userId);
+        dest.writeString(author);
+        dest.writeString(time);
+        dest.writeString(cmCount);
+        dest.writeString(title);
+        dest.writeString(content);
+    }
+
+    public static final Parcelable.Creator<SampleBean> CREATOR =
+            new Parcelable.Creator<SampleBean>() {
+
+                @Override
+                public SampleBean createFromParcel(Parcel source) {
+                    // TODO Auto-generated method stub
+                    return new SampleBean(source);
+                }
+
+                @Override
+                public SampleBean[] newArray(int size) {
+                    // TODO Auto-generated method stub
+                    return new SampleBean[size];
+                }
+
+            };
+
+    private SampleBean(Parcel in) {
+        id = in.readString();
+        userId = in.readString();
+        author = in.readString();
+        time = in.readString();
+        cmCount = in.readString();
+        title = in.readString();
+        content = in.readString();
     }
 }

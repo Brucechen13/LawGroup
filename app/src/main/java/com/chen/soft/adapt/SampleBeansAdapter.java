@@ -1,6 +1,8 @@
 package com.chen.soft.adapt;
 
 import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +11,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.chen.soft.R;
+import com.chen.soft.activity.MsgDetailActivity;
+import com.chen.soft.activity.SampleDetailActivity;
 
 import java.util.List;
 
@@ -49,7 +53,7 @@ public class SampleBeansAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
         final ViewHolder holder;
         if (convertView == null) {
             holder = new ViewHolder();
@@ -87,20 +91,21 @@ public class SampleBeansAdapter extends BaseAdapter {
             @Override
             public void onClick(View v) {
                 // TODO Auto-generated method stub
-//                Intent intent = new Intent(mContext, TraffficMsgDetail.class);
-//                Bundle bundle = new Bundle();
-//                bundle.putParcelable("msg", data.get(position));
-//                Log.d("traffic", "push msg:" + data.get(position).getUserName());
-//                intent.putExtras(bundle);
-//                mContext.startActivity(intent);
+//              Log.d("info", "into");
+                Intent intent = new Intent(mContext, SampleDetailActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putParcelable("sample", data.get(position));
+                intent.putExtras(bundle);
+                mContext.startActivity(intent);
             }
         };
 
         SampleBean bean = data.get(position);
         holder.username.setText(bean.getAuthor());
         holder.time.setText(bean.getTime());
-        holder.content.setText(bean.getContent());
+        holder.content.setText(bean.getTitle());
         holder.comment_num.setText(bean.getCmCount());
+        holder.content_ll.setOnClickListener(infoDetailListener);
 
 
         holder.username.setOnClickListener(userInfoListener);

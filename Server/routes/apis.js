@@ -28,7 +28,7 @@ router.get('/login', function(req, res) {//登陆，检查是否为新用户
 	});
 });
 
-router.get('/newuser', function(req, res) {//添加新用户
+router.post('/newuser', function(req, res) {//添加新用户
 	var qq = req.param('qq');
 	var name = req.param('name');
 	var pic = req.param('pic');

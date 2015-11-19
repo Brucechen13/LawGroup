@@ -30,6 +30,9 @@ import com.tencent.tauth.UiError;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 /**
  * Created by chenchi_94 on 2015/10/11.
  */
@@ -183,8 +186,21 @@ public class LoginActivity extends TitleActivity implements View.OnClickListener
                             Log.d("info",json.getString("gender"));
                         }
 
+//                        String url = null;
+//                        try {
+//                            url = URLEncoder.encode(String.format("%s?qq=%s&name=%s&pic=%s&gender=%s", ServerUtil.newUerUrl, user.getId(), user.getUserName(), user.getPic(), user.getGender()), "UTF-8");
+//                        } catch (UnsupportedEncodingException e) {
+//                            e.printStackTrace();
+//                        }
+                        JsonObject gson = new JsonObject();
+                        gson.addProperty("qq", user.getId());
+                        gson.addProperty("name", user.getUserName());
+                        gson.addProperty("pic", user.getPic());
+                        gson.addProperty("gender", user.getGender());
                         Ion.with(LoginActivity.this)
-                                .load(String.format("%s?qq=%s&name=%s&pic=%s&gender=%s",ServerUtil.newUerUrl, user.getId(), user.getUserName(), user.getPic(), user.getGender())).asJsonObject()
+                                .load(ServerUtil.newUerUrl)
+                                .setJsonObjectBody(gson)
+                                .asJsonObject()
                                 .setCallback(new FutureCallback<JsonObject>() {
 
                                     @Override
@@ -199,7 +215,7 @@ public class LoginActivity extends TitleActivity implements View.OnClickListener
                                         if(suc.equals("true")){
                                             loginActivity();
                                         }else{
-                                            Log.d("traffic",suc);
+                                            Log.d("info",suc);
                                             dataTips.setText("登录失败,请联系应用开发者");
                                         }
                                     }
