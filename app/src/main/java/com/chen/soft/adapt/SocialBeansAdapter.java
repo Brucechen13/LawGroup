@@ -116,7 +116,7 @@ public class SocialBeansAdapter extends BaseAdapter {
                 Log.d("info", "into");
                 Intent intent = new Intent(mContext, MsgDetailActivity.class);
                 Bundle bundle = new Bundle();
-                bundle.putParcelable("sample", data.get(position));
+                bundle.putParcelable("msg", data.get(position));
                 intent.putExtras(bundle);
                 mContext.startActivity(intent);
             }

@@ -57,7 +57,6 @@ function init(mongoose){
 	var Msg = mongoose.model('Msg', Msg);
 
 	var comment = new Schema({
-		msg:{type:ObjectId, ref:'Msg'},
 		user:{type:String, ref:'User'},
 		userName:{type:String},//populate无法多重查询，所以增加新的属性
 		content:{type:String},
@@ -183,7 +182,7 @@ function init(mongoose){
 		});
 	};
 
-	var addComment = function(qq, msgid, content, callback){
+	var addMsgComment = function(qq, msgid, content, callback){
 		User.findById(qq, function (err, user) {
 			if(err){
 				console.log(err);
@@ -191,7 +190,7 @@ function init(mongoose){
 				return;
 			}
 			var comment = new Comment({content:content, user:qq, 
-			userName:user.name, msg:msgid});
+			userName:user.name});
 			comment.save(function(err){
 				if(err){
 					console.log(err);
@@ -217,6 +216,51 @@ function init(mongoose){
 				msg.ctCount += 1;
 				msg.comments.push(comment);
 				msg.save(function(err){
+					if(err){
+						console.log(err);
+						callback(err);
+						return;
+					}
+				});
+			});
+			callback(null);
+		});
+	};
+	
+	var addSampleComment = function(qq, sampleid, content, callback){
+		User.findById(qq, function (err, user) {
+			if(err){
+				console.log(err);
+				callback(err);
+				return;
+			}
+			var comment = new Comment({content:content, user:qq, 
+			userName:user.name});
+			comment.save(function(err){
+				if(err){
+					console.log(err);
+					callback(err);
+					return;
+				}
+			});
+			user.score += CommentScore;//增加积分
+			user.comments.push(comment);
+			user.save(function(err){
+				if(err){
+					console.log(err);
+					callback(err);
+					return;
+				}
+			});
+			Sample.findById(sampleid, function (err, sample) {
+				if(err){
+					console.log(err);
+					callback(err);
+					return;
+				}
+				sample.ctCount += 1;
+				sample.comments.push(comment);
+				sample.save(function(err){
 					if(err){
 						console.log(err);
 						callback(err);
@@ -486,7 +530,8 @@ function init(mongoose){
 		userSamples:userSamples,//查看用户上传的所有案例信息信息
 		allSamples:allSamples,//查看案例信息信息
 		recentSamples:recentSamples,//查看最新的案例信息信息
-		addComment:addComment,//添加用户评论
+		addMsgComment:addMsgComment,//添加用户评论
+		addSampleComment:addSampleComment,//添加案例评论
 		addUpMsg:addUpMsg,//添加消息点赞
 		MsgComments:MsgComments,//查看交通信息的评论
 		addFriend:addFriend,//获取关联用户，添加好友

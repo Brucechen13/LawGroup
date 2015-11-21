@@ -18,7 +18,8 @@ public class ServerUtil {
     public static String getSamplesUrl = url+"/getsamples";
     public static String getNewestSamplesUrl = url+"/getrecentsamples";
 
-    public static String addCommentUrl = url+"/addcomment";
+    public static String addMsgCommentUrl = url+"/addmsgcomment";
+    public static String addSampleCommentUrl = url+"/addsamplecomments";
     public static String addUpMsgUrl = url+"/addUpMsg";
-    public static String getCommentsUrl = url+"/getcomments";
+    public static String getMsgCommentsUrl = url+"/getmsgcomments";
 }

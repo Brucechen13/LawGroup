@@ -159,8 +159,8 @@ router.get('/addUpMsg', function(req, res){//点赞
 	});
 });
 
-router.get('/addcomment', function(req, res){//获取交通信息的评论，可分页
-	models.Account.addComment(req.param('user'),req.param('msg'),req.param('content'),
+router.post('/addmsgcomment', function(req, res){//获取交通信息的评论，可分页
+	models.Account.addMsgComment(req.param('user'),req.param('msg'),req.param('content'),
 	function(err){
 		if(err == null){
 			res.json({"suc":"true"});
@@ -170,7 +170,7 @@ router.get('/addcomment', function(req, res){//获取交通信息的评论，可
 	});
 });
 
-router.get('/getcomments', function(req, res){//获取交通信息的评论，可分页
+router.get('/getmsgcomments', function(req, res){//获取交通信息的评论，可分页
 	models.Account.MsgComments(req.param('msg'),req.param('skip'), 
 	function(doc){
 		console.log(doc);

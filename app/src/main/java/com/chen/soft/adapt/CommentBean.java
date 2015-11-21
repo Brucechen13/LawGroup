@@ -58,4 +58,20 @@ public class CommentBean {
     public void setTime(String time) {
         this.time = time;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof CommentBean)) return false;
+
+        CommentBean that = (CommentBean) o;
+
+        return getId().equals(that.getId());
+
+    }
+
+    @Override
+    public int hashCode() {
+        return getId().hashCode();
+    }
 }

@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.chen.soft.R;
 import com.chen.soft.adapt.CommentBean;
@@ -206,7 +207,7 @@ public class MsgDetailActivity extends TitleActivity implements View.OnClickList
 
     private void loadData(){
         Ion.with(MsgDetailActivity.this)
-                .load(String.format("%s?msg=%s&skip=%s", ServerUtil.getCommentsUrl, msg.getId(),
+                .load(String.format("%s?msg=%s&skip=%s", ServerUtil.getMsgCommentsUrl, msg.getId(),
                         offset))
                 .asJsonObject().setCallback(new FutureCallback<JsonObject>(){
 
@@ -240,8 +241,8 @@ public class MsgDetailActivity extends TitleActivity implements View.OnClickList
         time = ParseUtil.ParseUrl(time);
         Log.d("info", time);
         Ion.with(MsgDetailActivity.this)
-                .load(String.format("%s?msg=%s&date=%s", ServerUtil.getCommentsUrl, msg.getId(),
-                        time))
+                .load(String.format("%s?msg=%s&date=%s", ServerUtil.getMsgCommentsUrl, msg.getId(),
+                        time))//本来打算使用时间来获取最新评论，后改为获取表中最初的数据，与当前数组取合集
                 .asJsonObject().setCallback(new FutureCallback<JsonObject>(){
 
             @Override
@@ -259,8 +260,16 @@ public class MsgDetailActivity extends TitleActivity implements View.OnClickList
                     return;
                 }
                 date = new Date();
-                offset+=comments.size();
-                adapter.addFirstNews(getComments(comments));
+                int size = adapter.addFirstNews(getComments(comments));
+                if(size < comments.size()) {
+                    offset += comments.size();
+                }else{
+                    offset = size;
+                }
+                if (size == 0) {
+                    Toast.makeText(MsgDetailActivity.this, "已经没有数据啦",
+                            Toast.LENGTH_SHORT).show();
+                }
                 adapter.notifyDataSetChanged();
                 commentsList.onRefreshComplete();
             }
@@ -329,17 +338,21 @@ public class MsgDetailActivity extends TitleActivity implements View.OnClickList
                 String cText = text.getText().toString().trim();
                 Log.d("info", cText);
                 this.comment_num.setText(String.valueOf(Integer.parseInt(
-                        msg.getCmCount())+1));
+                        msg.getCmCount()) + 1));
+                JsonObject json = new JsonObject();
+                json.addProperty("user", LoginUtil.user.getId());
+                json.addProperty("msg", msg.getId());
+                json.addProperty("content", cText);
                 Ion.with(MsgDetailActivity.this)
-                        .load(String.format("%s?user=%s&msg=%s&content=%s",ServerUtil.addCommentUrl,
-                                LoginUtil.user.getId(), msg.getId(), cText)).asJsonObject()
+                        .load(ServerUtil.addMsgCommentUrl)
+                               .setJsonObjectBody(json).asJsonObject()
                         .setCallback(new FutureCallback<JsonObject>() {
                             @Override
                             public void onCompleted(Exception arg0, JsonObject arg1) {
                                 // TODO Auto-generated method stub
                                 if (arg0 != null || !arg1.get("suc").getAsString().equals("true")) {
                                     UIShowUtil.toastMessage(MsgDetailActivity.this, "添加失败");
-                                }else{
+                                } else {
                                     UIShowUtil.toastMessage(MsgDetailActivity.this, "添加成功");
                                 }
                                 text.setText("");

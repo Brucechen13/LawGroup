@@ -96,7 +96,17 @@ public class CommentsBeanAdapter extends BaseAdapter {
         data.addAll(addNews);
     }
 
-    public void addFirstNews(List<CommentBean> addNews) {
-        data.addAll(0, addNews);
+    public int addFirstNews(List<CommentBean> addNews) {
+        int offset = 0;
+        for (CommentBean bean:addNews
+             ) {
+            Log.d("info", "offset: " + offset + " " + bean.getContent());
+            if(data.contains(bean)){
+                break;
+            }
+            data.add(offset, bean);
+            offset++;
+        }
+        return offset;
     }
 }
