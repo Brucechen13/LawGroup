@@ -79,7 +79,7 @@ public class FragmentSocial extends BaseFragment {
         addMsg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(LoginUtil.Login(FragmentSocial.this.getActivity())){
+                if (LoginUtil.Login(FragmentSocial.this.getActivity())) {
                     startActivity(new Intent(FragmentSocial.this.getActivity(), AddMsgActivity.class));
                 }
             }
@@ -96,6 +96,13 @@ public class FragmentSocial extends BaseFragment {
         msgList.setAdapter(adapter);
         date = new Date();
         loadData();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        loadNewestData();
+
     }
 
     private void loadData(){
@@ -173,7 +180,6 @@ public class FragmentSocial extends BaseFragment {
 
             refreshView.getLoadingLayoutProxy().setLastUpdatedLabel(label);
             loadNewestData();
-
         }
 
         @Override

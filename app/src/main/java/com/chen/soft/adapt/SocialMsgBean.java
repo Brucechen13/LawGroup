@@ -18,7 +18,7 @@ public class SocialMsgBean implements Parcelable{
     private String upCount;
     private String cmCount;
 
-    public SocialMsgBean(String id, String userId, String userName, String userPic, String content, String title,
+    public SocialMsgBean(String id, String userId, String userName, String userPic, String title,String content,
                          String time, String goodNum, String commentNum) {
         super();
         this.id = id;
