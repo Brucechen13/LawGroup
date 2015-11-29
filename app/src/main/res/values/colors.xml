@@ -10,6 +10,8 @@
     <color name="title_main_color">#FFDEAD</color>
     <color name="text_item_color">#404040</color>
 
+    <color name="edit_bg_color">#f7f3f3</color>
+
     <!-- 标题栏返回按钮的背景颜色 -->
     <drawable name="button_backward_pressed">#40F64C99</drawable>
     <drawable name="button_backward_normal">#25d7d4d4</drawable>

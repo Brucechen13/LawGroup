@@ -5,7 +5,7 @@ var router = express.Router();
 
 var mongoose = require('mongoose');
 var models = {
-	Account:require('../models/Account')(mongoose)
+	Account:require('./models/Account')(mongoose)
 };
 
 var pool=[];//连接池
