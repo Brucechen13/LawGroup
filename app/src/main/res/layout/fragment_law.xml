@@ -26,6 +26,31 @@
             android:smoothScrollbar="true"
             ptr:ptrAnimationStyle="flip" >
         </com.handmark.pulltorefresh.library.PullToRefreshListView>
+
+        <LinearLayout
+            android:id="@+id/search"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:clickable="true"
+            android:layout_margin="@dimen/layout_marginLeft"
+            android:orientation="vertical"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:gravity="center">
+
+            <ImageView
+                android:layout_width="@dimen/item_button"
+                android:layout_height="@dimen/item_button"
+                android:scaleType="fitXY"
+                android:src="@mipmap/create" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="搜索"/>
+        </LinearLayout>
     </RelativeLayout>
 
 </LinearLayout>

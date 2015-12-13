@@ -39,12 +39,10 @@ public class LawDetail  extends TitleActivity implements View.OnClickListener {
 
     private void initView() {
         law = (LawBean) getIntent().getParcelableExtra("law");
-
         setContentView(R.layout.activity_law);
         setTitle(law.getHanzi());
         showBackwardView(R.string.button_backward, true);
 
-        lawText = (TextView)findViewById(R.id.lawText);
         webView = (WebView)findViewById(R.id.webView);
         webView.getSettings().setDefaultTextEncodingName("utf-8");
         // 设置可以支持缩放
@@ -60,25 +58,19 @@ public class LawDetail  extends TitleActivity implements View.OnClickListener {
 
     private void loadData(){
         try {
-            String path = "laws/"+ law.getRoot() + "/" + law.getPinyin() +".html";
+            String path = "laws/"+ law.getRoot() + "/" + law.getPinyin();
             Log.d("info", path);
             InputStream is = getResources().getAssets().open(path);
             byte[] buff = new byte[is.available()];
             is.read(buff);
             String html = new String(buff, "gbk");
-            //Log.d("info", html);
-            String htm = "<html>\n" +
-                    "<head>\n" +
-                    "</head>\n" +
-                    "<body>\n" +
-                    "wuliu\n" +
-                    "</body>\n" +
-                    "</html>";
-            Log.d("info", webView.toString());
-            webView.loadData(html,"text/html; charset=UTF-8", null);//loadDataWithBaseURL
+            String htm = "<Html><head></head><body>haha</body></html>";
+            Log.d("info", "start" + html.length());
+            webView.loadData(htm, "text/html; charset=UTF-8", null);//loadDataWithBaseURL
+            Log.d("info", "EMD");
             //lawText.setText(html);
         }catch (Exception e){
-            Log.d("info", e.toString());
+            Log.d("info", "error: " + e.toString());
         }
     }
 

@@ -11,8 +11,11 @@ import android.widget.BaseAdapter;
 import android.widget.Toast;
 
 import com.chen.soft.R;
+import com.chen.soft.activity.LawSearch;
 import com.chen.soft.adapt.LawBean;
 import com.chen.soft.adapt.LawsAdapter;
+import com.chen.soft.util.LawsUtil;
+import com.google.gson.JsonObject;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
@@ -44,23 +47,29 @@ public class FragmentLaw extends BaseFragment implements View.OnClickListener {
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        Log.d("findMe", "Map create");
+        Log.d("info", "Map create");
         super.onActivityCreated(savedInstanceState);
         msgList = (PullToRefreshListView) getView().findViewById(R.id.lawList);
         new GetNewsTask().execute();
     }
 
-    private void intiView(){
+    private void intiView() {
         adapter = new LawsAdapter(getView().getContext(),
                 laws);
         initPullToRefreshListView(msgList, adapter);
+        getView().findViewById(R.id.search).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(FragmentLaw.this.getActivity(), LawSearch.class));
+            }
+        });
     }
 
     private void initPullToRefreshListView(PullToRefreshListView msgList,
                                            BaseAdapter adapter) {
         // TODO Auto-generated method stub
         Log.d("traffic", "create list");
-        msgList.setMode(PullToRefreshBase.Mode.BOTH);
+        msgList.setMode(PullToRefreshBase.Mode.DISABLED);
         msgList.setAdapter(adapter);
         //loadData();
     }
@@ -74,52 +83,69 @@ public class FragmentLaw extends BaseFragment implements View.OnClickListener {
 
     }
 
-    private void initHanziJson(){
+    private void initHanziJson() {
         hanzis = new HashMap<>();
-        try{
-            InputStream is = getResources().openRawResource(R.raw.pinhanzi);
+        try {
+            InputStream is = getResources().openRawResource(R.raw.keyname);
             byte[] buff = new byte[is.available()];
             is.read(buff);
-            String json = new String(buff,"utf-8");
+            String json = new String(buff, "gbk");
             JSONObject jsonObject = new JSONObject(json);
             Iterator<String> keys = jsonObject.keys();
-            while(keys.hasNext()){
+            while (keys.hasNext()) {
                 String key = keys.next();
                 String value = jsonObject.getString(key);
+                //Log.d("info", key + " " + value);
                 hanzis.put(key, value);
             }
-        }catch (Exception e) {
-            Log.d("info", e.toString());
+        } catch (Exception e) {
+            Log.d("info", e.toString() + "init Hanzi Error");
         }
     }
 
-    private void initFileJson(){
+    private void initFileJson() {
         laws = new ArrayList<>();
-        try{
-            InputStream is = getResources().openRawResource(R.raw.pinfiles);
+        try {
+            InputStream is = getResources().openRawResource(R.raw.filepath);
             byte[] buff = new byte[is.available()];
             is.read(buff);
-            String json = new String(buff,"utf-8");
+            String json = new String(buff, "gbk");
             JSONObject jsonObject = new JSONObject(json);
             Iterator<String> keys = jsonObject.keys();
-            while(keys.hasNext()){
+            while (keys.hasNext()) {
                 List<LawBean> claws = new ArrayList<>();
                 String key = keys.next();
                 LawBean law = new LawBean(key, hanzis.get(key));
                 String value = jsonObject.getString(key);
                 JSONObject cjsonObject = new JSONObject(value);
-                Iterator<String> ckeys = cjsonObject.keys();
-                while(ckeys.hasNext()) {
+                JSONObject lawsObject = cjsonObject.getJSONObject("laws");
+                JSONObject introsObject = cjsonObject.getJSONObject("intro");
+                Iterator<String> ckeys = lawsObject.keys();
+                while (ckeys.hasNext()) {
                     String ckey = ckeys.next();
-                    String cvalue = cjsonObject.getString(ckey);
-                    claws.add(new LawBean(ckey, cvalue, key));
+                    JSONObject cvalue = lawsObject.getJSONObject(ckey);
+                    String time = cvalue.getString("time");
+                    LawBean claw = new LawBean(ckey, hanzis.get(ckey), key, time);
+                    LawsUtil.addToLisy(claw);
+                    claws.add(claw);
                 }
-                //Log.d("info", "len: " + claws.size());
                 law.setLawChilds(claws);
+                claws = new ArrayList<>();
+                ckeys = introsObject.keys();
+                while (ckeys.hasNext()) {
+                    String ckey = ckeys.next();
+                    JSONObject cvalue = introsObject.getJSONObject(ckey);
+                    String time = cvalue.getString("time");
+                    LawBean claw = new LawBean(ckey, hanzis.get(ckey), key, time);
+                    LawsUtil.addToLisy(claw);
+                    claws.add(claw);
+                    //Log.d("info", claw.getHanzi());
+                }
+                law.setIntroChilds(claws);
                 laws.add(law);
             }
-        }catch (Exception e) {
-            Log.d("info", e.toString());
+        } catch (Exception e) {
+            Log.d("info", e.toString() + "Parse Json Error");
         }
     }
 

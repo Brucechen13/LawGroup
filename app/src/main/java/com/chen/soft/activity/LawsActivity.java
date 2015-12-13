@@ -18,7 +18,8 @@ import java.util.List;
  */
 public class LawsActivity extends TitleActivity implements View.OnClickListener {
 
-    private List<LawBean> laws;
+    private List<LawBean> laws;//法律
+    private List<LawBean> intros;//法规
     private PullToRefreshListView msgList = null;
     private LawsAdapter adapter;
 
@@ -37,7 +38,8 @@ public class LawsActivity extends TitleActivity implements View.OnClickListener 
     private void initView() {
         LawBean law = (LawBean)getIntent().getParcelableExtra("law");
         laws = law.getLawChilds();
-
+        laws.addAll(law.getIntroChilds());
+        Log.d("info", "child size"+law.getIntroChilds().size());
         setContentView(R.layout.activity_laws);
         setTitle(law.getHanzi());
         showBackwardView(R.string.button_backward, true);
@@ -57,7 +59,7 @@ public class LawsActivity extends TitleActivity implements View.OnClickListener 
                                            BaseAdapter adapter) {
         // TODO Auto-generated method stub
         Log.d("traffic", "create list");
-        msgList.setMode(PullToRefreshBase.Mode.BOTH);
+        msgList.setMode(PullToRefreshBase.Mode.DISABLED);
         msgList.setAdapter(adapter);
     }
 

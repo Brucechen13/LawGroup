@@ -30,6 +30,10 @@ public class LawsAdapter extends BaseAdapter {
         this.mContext = context;
     }
 
+    public LawsAdapter(Context context) {
+        this.mContext = context;
+    }
+
     @Override
     public int getCount() {
         // TODO Auto-generated method stub
@@ -71,7 +75,6 @@ public class LawsAdapter extends BaseAdapter {
                 // TODO Auto-generated method stub
                 LawBean law = data.get(position);
                 if(law.getLawChilds().size() != 0) {
-                    Log.i("info","childs enter");
                     Bundle mBundle = new Bundle();
                     Intent intent = new Intent();
                     mBundle.putParcelable("law", law);

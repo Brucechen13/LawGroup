@@ -18,6 +18,16 @@ public class LawBean implements Parcelable {
 
     private String root;
 
+    private String postTime;
+
+    public String getPostTime() {
+        return postTime;
+    }
+
+    public void setPostTime(String postTime) {
+        this.postTime = postTime;
+    }
+
     public String getRoot() {
         return root;
     }
@@ -26,7 +36,17 @@ public class LawBean implements Parcelable {
         this.root = root;
     }
 
-    private List<LawBean> lawChilds  = new ArrayList();;
+    private List<LawBean> lawChilds  = new ArrayList();
+
+    private List<LawBean> introChilds  = new ArrayList();
+
+    public List<LawBean> getIntroChilds() {
+        return introChilds;
+    }
+
+    public void setIntroChilds(List<LawBean> introChilds) {
+        this.introChilds = introChilds;
+    }
 
     public LawBean() {
         super();
@@ -38,11 +58,12 @@ public class LawBean implements Parcelable {
         this.hanzi = hanzi;
     }
 
-    public LawBean(String pinyin, String hanzi, String root) {
+    public LawBean(String pinyin, String hanzi, String root, String postTime) {
         super();
         this.pinyin = pinyin;
         this.hanzi = hanzi;
         this.root = root;
+        this.postTime = postTime;
     }
 
     public List<LawBean> getLawChilds() {
@@ -82,6 +103,7 @@ public class LawBean implements Parcelable {
         dest.writeString(hanzi);
         dest.writeString(root);
         dest.writeTypedList(lawChilds);
+        dest.writeTypedList(introChilds);
     }
 
     public static final Parcelable.Creator<LawBean> CREATOR =
@@ -106,6 +128,7 @@ public class LawBean implements Parcelable {
         hanzi = in.readString();
         root = in.readString();
         in.readTypedList(lawChilds, LawBean.CREATOR);
+        in.readTypedList(introChilds, LawBean.CREATOR);
     }
 
 }
