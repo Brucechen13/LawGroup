@@ -15,6 +15,8 @@ import android.widget.TextView;
 
 import com.chen.soft.R;
 import com.chen.soft.activity.MsgDetailActivity;
+import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.ion.Ion;
 
 import java.util.List;
 
@@ -116,23 +118,37 @@ public class SocialBeansAdapter extends BaseAdapter {
                 Log.d("info", "into");
                 Intent intent = new Intent(mContext, MsgDetailActivity.class);
                 Bundle bundle = new Bundle();
-                bundle.putParcelable("msg", data.get(position));
+                bundle.putSerializable("msg", data.get(position));
                 intent.putExtras(bundle);
                 mContext.startActivity(intent);
             }
         };
 
         SocialMsgBean bean = data.get(position);
-        holder.username.setText(bean.getUserName());
-        holder.time.setText(bean.getUpTime());
+        holder.username.setText(bean.getAuthor().getUserName());
+        holder.time.setText(bean.getUpdatedAt());
         holder.content.setText(bean.getTitle());
-        holder.good_num.setText(bean.getUpCount());
-        holder.comment_num.setText(bean.getCmCount());
+        holder.good_num.setText(""+bean.getUpCount());
+        holder.comment_num.setText(""+bean.getCmCount());
 
+        Ion.with(mContext)
+                .load(bean.getAuthor().getPic())
+                .withBitmap()
+                        //.placeholder(R.drawable.placeholder_image)
+                .error(R.mipmap.tou)
+                .intoImageView(holder.userimg_iv).setCallback(new FutureCallback<ImageView>() {
+            @Override
+            public void onCompleted(Exception arg0, ImageView arg1) {
+                // TODO Auto-generated method stub
+                if (arg0 != null) {
+                    Log.d("info", arg0.toString());
+                }
+            }
+
+        });
 
         holder.content.setOnClickListener(userInfoListener);
         holder.userimg_iv.setOnClickListener(userInfoListener);
-        //holder.username.setOnClickListener(userInfoListener);
         holder.content_ll.setOnClickListener(infoDetailListener);
 
 

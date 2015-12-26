@@ -1,6 +1,7 @@
 package com.chen.soft.activity;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -30,11 +31,12 @@ public class SampleDetailActivity extends TitleActivity implements View.OnClickL
     private void initView() {
         setContentView(R.layout.activity_sampledetail);
         showBackwardView(R.string.button_backward, true);
-        sample = (SampleBean)getIntent().getParcelableExtra("sample");
+        sample = (SampleBean)getIntent().getSerializableExtra("sample");
 
         setTitle(sample.getTitle());
         content = (TextView)this
                 .findViewById(R.id.content);
+        Log.d("info", sample.getTitle() + " " + sample.getContent());
         content.setText(sample.getContent());
     }
 

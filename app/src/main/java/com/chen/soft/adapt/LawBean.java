@@ -7,6 +7,8 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.bmob.v3.BmobObject;
+
 /**
  * Created by chenchi_94 on 2015/10/2.
  */

@@ -81,8 +81,8 @@ public class CommentsBeanAdapter extends BaseAdapter {
         };
 
         CommentBean bean = data.get(position);
-        holder.username.setText(bean.getUserName());
-        holder.time.setText(bean.getTime());
+        holder.username.setText(bean.getUser().getUserName());
+        holder.time.setText(bean.getUpdatedAt());
         holder.content.setText(bean.getContent());
 
 

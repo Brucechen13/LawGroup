@@ -1,19 +1,11 @@
 package com.chen.soft;
 
-import android.annotation.SuppressLint;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.net.Uri;
-import android.os.Debug;
-import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.util.Log;
 import android.widget.TextView;
 
-import com.chen.soft.activity.LoginActivity;
 import com.chen.soft.fragment.FragmentCallback;
 import com.chen.soft.fragment.FragmentSample;
 import com.chen.soft.fragment.FragmentLaw;
@@ -21,12 +13,8 @@ import com.chen.soft.fragment.FragmentSocial;
 import com.chen.soft.fragment.FragmentUser;
 import com.chen.soft.fragment.FragmentUtils;
 import com.chen.soft.util.LoginUtil;
-import com.chen.soft.util.StatusUtil;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import cn.bmob.v3.Bmob;
 
 
 public class MainActivity extends FragmentActivity implements
@@ -55,6 +43,8 @@ public class MainActivity extends FragmentActivity implements
         mCurrentTabIndex = 0;
         mPreviousTabIndex = 0;
         setupViews();
+
+        Bmob.initialize(this, "eba5bc0bae50550f95b0a934d37b62e5");
     }
 
     private void setupViews() {

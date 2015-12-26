@@ -7,12 +7,16 @@ import android.view.View;
 import android.widget.EditText;
 
 import com.chen.soft.R;
+import com.chen.soft.adapt.SocialMsgBean;
+import com.chen.soft.user.User;
 import com.chen.soft.util.LoginUtil;
 import com.chen.soft.util.ServerUtil;
 import com.chen.soft.util.UIShowUtil;
 import com.google.gson.JsonObject;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
+
+import cn.bmob.v3.listener.SaveListener;
 
 /**
  * Created by chenchi_94 on 2015/10/12.
@@ -63,27 +67,31 @@ public class AddMsgActivity  extends TitleActivity implements View.OnClickListen
     }
 
     private void pushMsg(){
-        Log.i("info", "upload traffic msg");
-        JsonObject json = new JsonObject();
-        json.addProperty("qq", LoginUtil.user.getId());
-        json.addProperty("title", title.getText().toString());
-        json.addProperty("content", content.getText().toString());
+        Log.d("info", "upload traffic msg");
 
-        Ion.with(this)
-                .load(ServerUtil.addMsgUrl)
-                .setJsonObjectBody(json)
-                .asJsonObject()
-                .setCallback(new FutureCallback<JsonObject>() {
-                    @Override
-                    public void onCompleted(Exception e, JsonObject result) {
-                        // do stuff with the result or error
-                        if (e != null) {
-                            Log.i("traffic", e.toString());
-                            return;
-                        }
-                        UIShowUtil.toastMessage(AddMsgActivity.this, "上传成功");
-                        AddMsgActivity.this.finish();
-                    }
-                });
+        User user = LoginUtil.getUser(this);
+        Log.d("info", "user: " + user.getUserName() + " " + user.getGender());
+        // 创建帖子信息
+        SocialMsgBean post = new SocialMsgBean();
+        post.setTitle(title.getText().toString());
+        post.setContent(content.getText().toString());
+        //添加一对一关联
+        post.setAuthor(user);
+        post.save(this, new SaveListener() {
+
+            @Override
+            public void onSuccess() {
+                // TODO Auto-generated method stub
+                Log.d("info", "save lawSample success");
+                UIShowUtil.toastMessage(AddMsgActivity.this, "添加成功");
+                AddMsgActivity.this.finish();
+            }
+
+            @Override
+            public void onFailure(int code, String msg) {
+                // TODO Auto-generated method stub
+                UIShowUtil.toastMessage(AddMsgActivity.this, "add LawExample Error" + msg);
+            }
+        });
     }
 }

@@ -20,6 +20,7 @@ import com.chen.soft.adapt.SampleBeansAdapter;
 import com.chen.soft.util.LoginUtil;
 import com.chen.soft.util.ParseUtil;
 import com.chen.soft.util.ServerUtil;
+import com.chen.soft.util.UIShowUtil;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -28,9 +29,15 @@ import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+
+import cn.bmob.v3.BmobQuery;
+import cn.bmob.v3.datatype.BmobDate;
+import cn.bmob.v3.listener.FindListener;
 
 /**
  * Created by chenchi_94 on 2015/9/19.
@@ -42,8 +49,9 @@ public class FragmentSample extends BaseFragment{
     private SampleBeansAdapter adapter;
     private int offset = 0;
 
-    private Date date;
-    private static SimpleDateFormat sfd = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+    private Date lastDate;
+
+    private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -66,7 +74,7 @@ public class FragmentSample extends BaseFragment{
         hint = (TextView)getView().findViewById(R.id.hint);
 
         adapter = new SampleBeansAdapter(getView().getContext(),
-                getMsgs(null));
+                        new ArrayList<SampleBean>());
         initPullToRefreshListView(msgList, adapter);
 
 
@@ -88,31 +96,37 @@ public class FragmentSample extends BaseFragment{
         msgList.setMode(PullToRefreshBase.Mode.BOTH);
         msgList.setOnRefreshListener(new MyOnRefreshListener2(msgList));
         msgList.setAdapter(adapter);
-        date = new Date();
         loadData();
     }
 
     private void loadData(){
         hint.setText(R.string.data_loading);
-        Ion.with(FragmentSample.this)
-                .load(String.format("%s?skip=%s", ServerUtil.getSamplesUrl, offset))
-                .asJsonArray().setCallback(new FutureCallback<JsonArray>() {
+        BmobQuery<SampleBean> query = new BmobQuery<SampleBean>();
+        query.setSkip(offset);
+        query.order("-updatedAt");
+        query.include("author");// 希望在查询帖子信息的同时也把发布人的信息查询出来
+        lastDate = new Date();
+        query.findObjects(this.getActivity(), new FindListener<SampleBean>() {
+            @Override
+            public void onSuccess(List<SampleBean> objects) {
+                // TODO Auto-generated method stub
+                adapter.addNews(objects);
+                offset += objects.size();
+                adapter.notifyDataSetChanged();
+                msgList.onRefreshComplete();
+                hint.setText(R.string.data_loaded);
+
+                if(objects.size() > 0){
+                    offset += objects.size();
+                }else{
+                    UIShowUtil.toastMessage(getActivity(), "没有数据啦");
+                }
+            }
 
             @Override
-            public void onCompleted(Exception arg0, JsonArray arg1) {
+            public void onError(int code, String msg) {
                 // TODO Auto-generated method stub
-                if (arg0 != null) {
-                    Log.d("info", arg0.toString());
-                    Toast.makeText(getActivity(), "请检查网络",
-                            Toast.LENGTH_SHORT).show();
-                } else if (arg1.size() == 0) {
-                    Toast.makeText(getActivity(), "已经没有数据啦",
-                            Toast.LENGTH_SHORT).show();
-                } else {
-                    adapter.addNews(getMsgs(arg1));
-                    offset += arg1.size();
-                }
-                adapter.notifyDataSetChanged();
+                UIShowUtil.toastMessage(getActivity(), "查询失败:" + msg);
                 msgList.onRefreshComplete();
                 hint.setText(R.string.data_loaded);
             }
@@ -121,28 +135,30 @@ public class FragmentSample extends BaseFragment{
 
     private void loadNewestData(){
         hint.setText(R.string.data_loading);
-        String time = sfd.format(date);
-        time = ParseUtil.ParseUrl(time);
-        Ion.with(FragmentSample.this)
-                .load(String.format("%s?date=%s", ServerUtil.getNewestSamplesUrl, time))
-                .asJsonArray().setCallback(new FutureCallback<JsonArray>() {
+        BmobQuery<SampleBean> query = new BmobQuery<SampleBean>();
+        query.addWhereGreaterThanOrEqualTo("updatedAt",new BmobDate(lastDate));
+        query.order("-updatedAt");
+        query.include("author.userName");// 希望在查询帖子信息的同时也把发布人的信息查询出来
+        query.findObjects(this.getActivity(), new FindListener<SampleBean>() {
+            @Override
+            public void onSuccess(List<SampleBean> objects) {
+                // TODO Auto-generated method stub
+                adapter.addNews(objects);
+                offset += objects.size();
+                adapter.notifyDataSetChanged();
+                msgList.onRefreshComplete();
+                hint.setText(R.string.data_loaded);
+                if(objects.size() > 0){
+                    offset += objects.size();
+                }else{
+                    UIShowUtil.toastMessage(getActivity(), "没有最新数据");
+                }
+            }
 
             @Override
-            public void onCompleted(Exception arg0, JsonArray arg1) {
+            public void onError(int code, String msg) {
                 // TODO Auto-generated method stub
-                if (arg0 != null) {
-                    Log.d("info", arg0.toString());
-                    Toast.makeText(getActivity(), "请检查网络",
-                            Toast.LENGTH_SHORT).show();
-                } else if (arg1.size() == 0) {
-                    Toast.makeText(getActivity(), "已经没有数据啦",
-                            Toast.LENGTH_SHORT).show();
-                } else {
-                    date = new Date();
-                    offset += arg1.size();
-                    adapter.addFirstNews(getMsgs(arg1));
-                }
-                adapter.notifyDataSetChanged();
+                UIShowUtil.toastMessage(getActivity(), "查询失败:" + msg);
                 msgList.onRefreshComplete();
                 hint.setText(R.string.data_loaded);
             }
@@ -177,28 +193,5 @@ public class FragmentSample extends BaseFragment{
             loadData();
         }
 
-    }
-
-
-    public ArrayList<SampleBean> getMsgs(JsonArray res) {
-        ArrayList<SampleBean> ret = new ArrayList<SampleBean>();
-        if(res == null){
-            return ret;
-        }
-        for (int i = 0; i < res.size(); i++) {
-            JsonElement je = res.get(i);
-            JsonObject jo = je.getAsJsonObject();
-            Date date = ParseUtil.parseISODate(jo.get("time").getAsString());
-            String[] times = date.toLocaleString().split(" ");
-            SampleBean msg = new SampleBean(jo.get("_id").getAsString(),
-                    jo.get("user").getAsJsonObject().get("_id").getAsString(),
-                    jo.get("user").getAsJsonObject().get("name").getAsString(),
-                    jo.get("msg").getAsJsonObject().get("title").getAsString(),
-                    jo.get("msg").getAsJsonObject().get("content").getAsString(),
-                    times[0],
-                    jo.get("upCount").getAsString());
-            ret.add(msg);
-        }
-        return ret;
     }
 }

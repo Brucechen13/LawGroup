@@ -16,6 +16,7 @@ import com.chen.soft.R;
 import com.chen.soft.adapt.CommentBean;
 import com.chen.soft.adapt.CommentsBeanAdapter;
 import com.chen.soft.adapt.SocialMsgBean;
+import com.chen.soft.user.User;
 import com.chen.soft.util.LoginUtil;
 import com.chen.soft.util.ParseUtil;
 import com.chen.soft.util.ServerUtil;
@@ -31,6 +32,13 @@ import com.koushikdutta.ion.Ion;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+
+import cn.bmob.v3.BmobQuery;
+import cn.bmob.v3.datatype.BmobDate;
+import cn.bmob.v3.listener.FindListener;
+import cn.bmob.v3.listener.SaveListener;
+import cn.bmob.v3.listener.UpdateListener;
 
 /**
  * Created by chenchi_94 on 2015/10/13.
@@ -42,7 +50,7 @@ public class MsgDetailActivity extends TitleActivity implements View.OnClickList
     private SocialMsgBean msg;
 
     private int offset = 0;
-    private Date date;
+    private Date lastDate;
     private static SimpleDateFormat sfd = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
     private boolean start = true;
@@ -78,8 +86,8 @@ public class MsgDetailActivity extends TitleActivity implements View.OnClickList
         setContentView(R.layout.activity_socialdetail);
         showBackwardView(R.string.button_backward, true);
 
-        msg = (SocialMsgBean)getIntent().getParcelableExtra("msg");
-        Log.d("info", "getMseeage:" + msg.getUserName());
+        msg = (SocialMsgBean)getIntent().getSerializableExtra("msg");
+        Log.d("info", "getMseeage:" + msg.getAuthor().getUserName());
         setTitle(msg.getTitle());
 
         username = (TextView) this
@@ -109,14 +117,13 @@ public class MsgDetailActivity extends TitleActivity implements View.OnClickList
 
         text=(EditText)this.findViewById(R.id.text);
 
-        username.setText(msg.getUserName());
-        time.setText(msg.getUpTime());
+        username.setText(msg.getAuthor().getUserName());
+        time.setText(msg.getUpdatedAt());
         content.setText(msg.getContent());
-        good_num.setText(msg.getUpCount());
-        comment_num.setText(msg.getCmCount());
-        username.setText(msg.getUserName());
+        good_num.setText("" + msg.getUpCount());
+        comment_num.setText(""+msg.getCmCount());
         Ion.with(this)
-                .load(msg.getUserPic())
+                .load(msg.getAuthor().getPic())
                 .withBitmap()
                         //.placeholder(R.drawable.placeholder_image)
                 .error(R.mipmap.tou)
@@ -124,7 +131,7 @@ public class MsgDetailActivity extends TitleActivity implements View.OnClickList
             @Override
             public void onCompleted(Exception arg0, ImageView arg1) {
                 // TODO Auto-generated method stub
-                if(arg0 != null){
+                if (arg0 != null) {
                     Log.d("info", arg0.toString());
                 }
             }
@@ -139,10 +146,8 @@ public class MsgDetailActivity extends TitleActivity implements View.OnClickList
             public void onClick(View v)
             {
                 // TODO Auto-generated method stub
-
                 if (!flag)
                 {
-
                     comgoodhandle.setVisibility(View.VISIBLE);
                     flag = true;
                 }
@@ -160,24 +165,24 @@ public class MsgDetailActivity extends TitleActivity implements View.OnClickList
             @Override
             public void onClick(View v) {
                 // TODO Auto-generated method stub
-                String num = msg.getUpCount();
-                msg.setUpCount(String.valueOf(Integer.parseInt(num) + 1));
-                MsgDetailActivity.this.good_num.setText(msg.getUpCount());
-                MsgDetailActivity.this.comgoodhandle.setVisibility(View.VISIBLE);
-                Ion.with(MsgDetailActivity.this)
-                        .load(String.format("%s?msg=%s",ServerUtil.addUpMsgUrl,
-                                msg.getId())).asJsonObject()
-                        .setCallback(new FutureCallback<JsonObject>() {
+                Integer num = msg.getUpCount();
+                msg.setUpCount(num + 1);
+                MsgDetailActivity.this.good_num.setText(""+msg.getUpCount());
+                MsgDetailActivity.this.comgoodhandle.setVisibility(View.INVISIBLE);
+                Log.d("info", "msg: " + msg.getObjectId());
+                msg.increment("upCount");
+                msg.update(MsgDetailActivity.this, new UpdateListener() {
+                    @Override
+                    public void onSuccess() {
+                        Log.d("info", "up successfule");
+                    }
 
-                            @Override
-                            public void onCompleted(Exception arg0, JsonObject arg1) {
-                                // TODO Auto-generated method stub
-                                if(arg0!=null || !"true".equals(arg1.get("suc").getAsString())){
-                                    Log.i("info", "failed");
-                                }
-                            }
-
-                        });
+                    @Override
+                    public void onFailure(int i, String s) {
+                        Log.d("info", "up fail");
+                        UIShowUtil.toastMessage(MsgDetailActivity.this, "Up Msg Error" + msg);
+                    }
+                });
             }
         });
 
@@ -190,7 +195,7 @@ public class MsgDetailActivity extends TitleActivity implements View.OnClickList
         });
 
 
-        adapter = new CommentsBeanAdapter(this, getComments(null));
+        adapter = new CommentsBeanAdapter(this, new ArrayList<CommentBean>());
         commentsList = (PullToRefreshListView)findViewById(R.id.commentsList);
         initPullToRefreshListView(commentsList, adapter);
     }
@@ -201,76 +206,64 @@ public class MsgDetailActivity extends TitleActivity implements View.OnClickList
         commentsList2.setMode(PullToRefreshBase.Mode.BOTH);
         commentsList2.setOnRefreshListener(new MyOnRefreshListener2(commentsList2));
         commentsList2.setAdapter(adapter);
-        date = new Date();
         loadData();
     }
 
     private void loadData(){
-        Ion.with(MsgDetailActivity.this)
-                .load(String.format("%s?msg=%s&skip=%s", ServerUtil.getMsgCommentsUrl, msg.getId(),
-                        offset))
-                .asJsonObject().setCallback(new FutureCallback<JsonObject>(){
-
+        BmobQuery<CommentBean> query = new BmobQuery<CommentBean>();
+        query.setSkip(offset);
+        query.order("-updatedAt");
+        query.include("author");// 希望在查询帖子信息的同时也把发布人的信息查询出来
+        lastDate = new Date();
+        query.findObjects(this, new FindListener<CommentBean>() {
             @Override
-            public void onCompleted(Exception arg0, JsonObject arg1) {
+            public void onSuccess(List<CommentBean> objects) {
                 // TODO Auto-generated method stub
-                if (arg0 != null) {
-                    Log.d("info", arg0.toString());
-                    UIShowUtil.toastMessage(MsgDetailActivity.this, "请检查网络");
-                    commentsList.onRefreshComplete();
-                    return;
-                }
-                JsonArray comments = arg1.get("comments").getAsJsonArray();
-                if(!start && comments.size()==0){
-                    UIShowUtil.toastMessage(MsgDetailActivity.this, "已经没有数据啦");
-                    commentsList.onRefreshComplete();
-                    return;
-                }
-                Log.d("info", comments.toString());
-                adapter.addNews(getComments(comments));
+                adapter.addNews(objects);
+                offset += objects.size();
                 adapter.notifyDataSetChanged();
                 commentsList.onRefreshComplete();
-                offset+=comments.size();
-                start = false;
+
+                if (objects.size() > 0) {
+                    offset += objects.size();
+                } else {
+                    UIShowUtil.toastMessage(MsgDetailActivity.this, "没有数据啦");
+                }
+            }
+
+            @Override
+            public void onError(int code, String msg) {
+                // TODO Auto-generated method stub
+                UIShowUtil.toastMessage(MsgDetailActivity.this, "查询失败:" + msg);
+                commentsList.onRefreshComplete();
             }
         });
     }
 
     private void loadNewestData(){
-        String time = sfd.format(date);
-        time = ParseUtil.ParseUrl(time);
-        Log.d("info", time);
-        Ion.with(MsgDetailActivity.this)
-                .load(String.format("%s?msg=%s&date=%s", ServerUtil.getMsgCommentsUrl, msg.getId(),
-                        time))//本来打算使用时间来获取最新评论，后改为获取表中最初的数据，与当前数组取合集
-                .asJsonObject().setCallback(new FutureCallback<JsonObject>(){
+        BmobQuery<CommentBean> query = new BmobQuery<CommentBean>();
+        query.addWhereGreaterThanOrEqualTo("updatedAt",new BmobDate(lastDate));
+        query.order("-updatedAt");
+        query.include("author.userName");// 希望在查询帖子信息的同时也把发布人的信息查询出来
+        query.findObjects(this, new FindListener<CommentBean>() {
+            @Override
+            public void onSuccess(List<CommentBean> objects) {
+                // TODO Auto-generated method stub
+                adapter.addNews(objects);
+                offset += objects.size();
+                adapter.notifyDataSetChanged();
+                commentsList.onRefreshComplete();
+                if (objects.size() > 0) {
+                    offset += objects.size();
+                } else {
+                    UIShowUtil.toastMessage(MsgDetailActivity.this, "没有最新数据");
+                }
+            }
 
             @Override
-            public void onCompleted(Exception arg0, JsonObject arg1) {
+            public void onError(int code, String msg) {
                 // TODO Auto-generated method stub
-                if (arg0 != null) {
-                    UIShowUtil.toastMessage(MsgDetailActivity.this, "请检查网络");
-                    commentsList.onRefreshComplete();
-                    return;
-                }
-                JsonArray comments = arg1.get("comments").getAsJsonArray();
-                if(!start && comments.size()==0){
-                    UIShowUtil.toastMessage(MsgDetailActivity.this, "已经没有数据啦");
-                    commentsList.onRefreshComplete();
-                    return;
-                }
-                date = new Date();
-                int size = adapter.addFirstNews(getComments(comments));
-                if(size < comments.size()) {
-                    offset += comments.size();
-                }else{
-                    offset = size;
-                }
-                if (size == 0) {
-                    Toast.makeText(MsgDetailActivity.this, "已经没有数据啦",
-                            Toast.LENGTH_SHORT).show();
-                }
-                adapter.notifyDataSetChanged();
+                UIShowUtil.toastMessage(MsgDetailActivity.this, "查询失败:" + msg);
                 commentsList.onRefreshComplete();
             }
         });
@@ -306,26 +299,6 @@ public class MsgDetailActivity extends TitleActivity implements View.OnClickList
 
     }
 
-    public ArrayList<CommentBean> getComments(JsonArray res) {
-        ArrayList<CommentBean> ret = new ArrayList<CommentBean>();
-        if(res == null){
-            return ret;
-        }
-        CommentBean hm;
-        for (int i = 0; i < res.size(); i++) {
-            JsonElement je = res.get(i);
-            JsonObject jo = je.getAsJsonObject();
-            Date date = ParseUtil.parseISODate(jo.get("time").getAsString());
-            Log.d("info", date.toLocaleString());
-            hm=new CommentBean(jo.get("_id").getAsString(),jo.get("user").getAsString(),
-                    jo.get("userName").getAsString(),
-                    jo.get("content").getAsString(), date.toLocaleString());
-            ret.add(hm);
-        }
-        return ret;
-    }
-
-
     @Override
     public void onClick(View v) {
         // TODO Auto-generated method stub
@@ -337,29 +310,46 @@ public class MsgDetailActivity extends TitleActivity implements View.OnClickList
                     return;
                 String cText = text.getText().toString().trim();
                 Log.d("info", cText);
-                this.comment_num.setText(String.valueOf(Integer.parseInt(
-                        msg.getCmCount()) + 1));
-                JsonObject json = new JsonObject();
-                json.addProperty("user", LoginUtil.user.getId());
-                json.addProperty("msg", msg.getId());
-                json.addProperty("content", cText);
-                Ion.with(MsgDetailActivity.this)
-                        .load(ServerUtil.addMsgCommentUrl)
-                               .setJsonObjectBody(json).asJsonObject()
-                        .setCallback(new FutureCallback<JsonObject>() {
-                            @Override
-                            public void onCompleted(Exception arg0, JsonObject arg1) {
-                                // TODO Auto-generated method stub
-                                if (arg0 != null || !arg1.get("suc").getAsString().equals("true")) {
-                                    UIShowUtil.toastMessage(MsgDetailActivity.this, "添加失败");
-                                } else {
-                                    UIShowUtil.toastMessage(MsgDetailActivity.this, "添加成功");
-                                }
-                                text.setText("");
-                                text.setFocusable(false);
+                msg.setCmCount(msg.getCmCount()+1);
+                this.comment_num.setText("" + msg.getCmCount());
+                User user = LoginUtil.getUser(this);
+                Log.d("info", "user: " + user.getUserName() + " " + user.getGender());
+                // 创建帖子信息
+                CommentBean post = new CommentBean();
+                post.setContent(cText);
+                post.setUser(user);
+                post.setMsg(msg);
+                post.save(this, new SaveListener() {
 
+                    @Override
+                    public void onSuccess() {
+                        // TODO Auto-generated method stub
+                        Log.d("info", "save lawSample success");
+                        UIShowUtil.toastMessage(MsgDetailActivity.this, "添加成功");
+                        loadNewestData();
+
+                        msg.increment("cmCount");
+                        msg.update(MsgDetailActivity.this, new UpdateListener() {
+                            @Override
+                            public void onSuccess() {
+                                Log.d("info", "add Cm successful");
+                            }
+
+                            @Override
+                            public void onFailure(int i, String s) {
+                                UIShowUtil.toastMessage(MsgDetailActivity.this, "add MsgComment Error" + msg);
+                                Log.d("info", "Error:" + msg);
                             }
                         });
+                    }
+
+                    @Override
+                    public void onFailure(int code, String msg) {
+                        // TODO Auto-generated method stub
+                        UIShowUtil.toastMessage(MsgDetailActivity.this, "add MsgComment Error" + msg);
+                        Log.d("info", "Error:" + msg);
+                    }
+                });
                 break;
             default:
                 break;

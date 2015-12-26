@@ -33,6 +33,10 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
+import cn.bmob.v3.BmobUser;
+import cn.bmob.v3.listener.OtherLoginListener;
+import cn.bmob.v3.listener.UpdateListener;
+
 /**
  * Created by chenchi_94 on 2015/10/11.
  */
@@ -43,7 +47,6 @@ public class LoginActivity extends TitleActivity implements View.OnClickListener
 
     static Tencent mTencent;
     String APP_ID = "1104503342";
-    private UserInfo mInfo;
     private User user;
     private View view;
 
@@ -70,161 +73,137 @@ public class LoginActivity extends TitleActivity implements View.OnClickListener
 
 
         // TODO Auto-generated method stub
-        qqLoginButton = (Button)this.findViewById(R.id.login);
-        qqLoginButton.setOnClickListener(this);
-        dataTips = (TextView) findViewById(R.id.dataloading); // 显示1.5秒钟后自动消失
-        user = new User();
-        SharedPreferences preferences = getSharedPreferences(StatusUtil.SHAREDPREFERENCES_NAME, MODE_PRIVATE);
-        if(preferences.getString("url", null)!=null){
-            ServerUtil.url = preferences.getString("url", null);
+        user = BmobUser.getCurrentUser(this, User.class);
+        if(user!=null){
+            Log.d("info", user.getGender() + " " + user.getUserName());
+            loginActivity();
         }else{
-            SharedPreferences.Editor editor = preferences.edit();
-            editor.putString("url", ServerUtil.url);
-            editor.commit();
+            qqAuthorize();
+            Log.d("info", "QQ LOGIN");
         }
-        if(preferences.getBoolean("account", false) &&
-                (preferences.getString("qq", null)!=null)){//如果之前已经成功登陆
-            validLogin(preferences.getString("qq", null));
-        }
-    }
-
-    @Override
-    public void onClick(View v) {
-        // TODO Auto-generated method stub
-        super.onClick(v);
-        if(v.getId() == R.id.login){
-            onClickLogin();
-        }
-    }
-    private void validLogin(String qq){
-        Log.d("info", qq);
-        dataTips.setVisibility(View.VISIBLE);
-
-        Ion.with(LoginActivity.this)
-                .load(String.format("%s?qq=%s",ServerUtil.loginUrl, qq)).asJsonObject()
-                .setCallback(new FutureCallback<JsonObject>() {
-                    @Override
-                    public void onCompleted(Exception e, JsonObject result) {
-                        // TODO Auto-generated method stub
-                        if (e != null) {
-                            Log.d("info",e.toString());
-                            dataTips.setText("登录失败："+e.toString());
-                            return;
-                        }
-                        Log.d("info","login:"+result);
-                        if(result.has("suc")){
-                            dataTips.setText(R.string.login_success);
-                            updateUserInfo();
-                        }else{
-                            dataTips.setText(R.string.login_success);
-                            user.parseJson(result);
-                            loginActivity();
-                        }
-                    }
-
-                });
     }
 
     private void loginActivity(){
         LoginUtil.isLogin = true;
         LoginUtil.user = user;
         LoginActivity.this.finish();
-        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-
-        LoginActivity.this.startActivity(intent);
+//        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+//
+//        LoginActivity.this.startActivity(intent);
     }
 
-    public static void initOpenidAndToken(JSONObject jsonObject) {
-        try {
-            String token = jsonObject.getString(Constants.PARAM_ACCESS_TOKEN);
-            String expires = jsonObject.getString(Constants.PARAM_EXPIRES_IN);
-            String openId = jsonObject.getString(Constants.PARAM_OPEN_ID);
-            if (!TextUtils.isEmpty(token) && !TextUtils.isEmpty(expires)
-                    && !TextUtils.isEmpty(openId)) {
-                mTencent.setAccessToken(token, expires);
-                mTencent.setOpenId(openId);
+    private void qqAuthorize(){
+        if(mTencent==null){
+            mTencent = Tencent.createInstance(APP_ID, getApplicationContext());
+        }
+        mTencent.logout(this);
+        mTencent.login(this, "all", new IUiListener() {
+
+            @Override
+            public void onComplete(Object arg0) {
+                // TODO Auto-generated method stub
+                if (arg0 != null) {
+                    JSONObject jsonObject = (JSONObject) arg0;
+                    try {
+                        String token = jsonObject.getString(com.tencent.connect.common.Constants.PARAM_ACCESS_TOKEN);
+                        String expires = jsonObject.getString(com.tencent.connect.common.Constants.PARAM_EXPIRES_IN);
+                        String openId = jsonObject.getString(com.tencent.connect.common.Constants.PARAM_OPEN_ID);
+                        mTencent.setAccessToken(token, expires);
+                        mTencent.setOpenId(openId);
+                        BmobUser.BmobThirdUserAuth authInfo = new BmobUser.BmobThirdUserAuth(BmobUser.BmobThirdUserAuth.SNS_TYPE_QQ, token, expires, openId);
+                        loginWithAuth(authInfo);
+                    } catch (JSONException e) {
+                    }
+                }
             }
-        } catch(Exception e) {
-        }
+
+            @Override
+            public void onError(UiError arg0) {
+                // TODO Auto-generated method stub
+                UIShowUtil.toastMessage(LoginActivity.this, "QQ授权出错：" + arg0.errorCode + "--" + arg0.errorDetail);
+            }
+
+            @Override
+            public void onCancel() {
+                // TODO Auto-generated method stub
+                UIShowUtil.toastMessage(LoginActivity.this, "取消qq授权");
+            }
+        });
     }
 
-    private void onClickLogin() {
-        if (!mTencent.isSessionValid()) {
-            mTencent.login(this, "all", loginListener);
-            Log.d("info", "FirstLaunch_SDK:" + SystemClock.elapsedRealtime());
-        } else {
-            mTencent.logout(this);
-            updateUserInfo();
-            //updateLoginButton();
-        }
+    /**
+     * @method loginWithAuth
+     * @param context
+     * @param authInfo
+     * @return void
+     * @exception
+     */
+    public void loginWithAuth(final BmobUser.BmobThirdUserAuth authInfo){
+        BmobUser.loginWithAuthData(LoginActivity.this, authInfo, new OtherLoginListener() {
+
+            @Override
+            public void onSuccess(JSONObject userAuth) {
+                // TODO Auto-generated method stub
+                Log.i("info", authInfo.getSnsType() + "登陆成功返回:" + userAuth);
+                User bmobUser = BmobUser.getCurrentUser(LoginActivity.this, User.class);
+                if(bmobUser.getUserName() == null) {
+                    updateUserInfo(bmobUser);
+                }
+                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                intent.putExtra("json", userAuth.toString());
+                intent.putExtra("from", authInfo.getSnsType());
+                startActivity(intent);
+            }
+
+            @Override
+            public void onFailure(int code, String msg) {
+                // TODO Auto-generated method stub
+                UIShowUtil.toastMessage(LoginActivity.this, "第三方登陆失败：" + msg);
+            }
+
+        });
     }
 
-    private void updateUserInfo() {
+    private void updateUserInfo(final BmobUser bmobUser) {
         if (mTencent != null && mTencent.isSessionValid()) {
             IUiListener listener = new IUiListener() {
 
                 @Override
                 public void onError(UiError e) {
-
                 }
-
                 @Override
                 public void onComplete(final Object response) {
-
                     JSONObject json = (JSONObject)response;
                     try {
                         if(json.has("figureurl")){
                             user.setPic(json.getString("figureurl_qq_2"));
-                            Log.d("info",json.getString("figureurl_qq_2"));
+                            Log.d("info", "login: " + json.getString("figureurl_qq_2"));
                         }
                         if (json.has("nickname")) {
                             user.setUserName(json.getString("nickname"));
-                            Log.d("traffic",json.getString("nickname"));
+                            Log.d("info", "login: " + json.getString("nickname"));
                         }
                         if (json.has("gender")) {
                             user.setGender(json.getString("gender"));
-                            Log.d("info",json.getString("gender"));
+                            Log.d("info", "login: " + json.getString("gender"));
                         }
-
-//                        String url = null;
-//                        try {
-//                            url = URLEncoder.encode(String.format("%s?qq=%s&name=%s&pic=%s&gender=%s", ServerUtil.newUerUrl, user.getId(), user.getUserName(), user.getPic(), user.getGender()), "UTF-8");
-//                        } catch (UnsupportedEncodingException e) {
-//                            e.printStackTrace();
-//                        }
-                        JsonObject gson = new JsonObject();
-                        gson.addProperty("qq", user.getId());
-                        gson.addProperty("name", user.getUserName());
-                        gson.addProperty("pic", user.getPic());
-                        gson.addProperty("gender", user.getGender());
-                        Ion.with(LoginActivity.this)
-                                .load(ServerUtil.newUerUrl)
-                                .setJsonObjectBody(gson)
-                                .asJsonObject()
-                                .setCallback(new FutureCallback<JsonObject>() {
-
-                                    @Override
-                                    public void onCompleted(Exception e,
-                                                            JsonObject result) {
-                                        // TODO Auto-generated method stub
-                                        if (e != null) {
-                                            Log.d("traffic",e.toString());
-                                            return;
-                                        }
-                                        String suc = result.get("suc").getAsString();
-                                        if(suc.equals("true")){
-                                            loginActivity();
-                                        }else{
-                                            Log.d("info",suc);
-                                            dataTips.setText("登录失败,请联系应用开发者");
-                                        }
-                                    }
-                                });
-
                     } catch (JSONException e1) {
                         // TODO Auto-generated catch block
                         e1.printStackTrace();
                     }
+                    user.update(LoginActivity.this, bmobUser.getObjectId(), new UpdateListener() {
+                        @Override
+                        public void onSuccess() {
+                            // TODO Auto-generated method stub
+                            Log.d("info", "更新用户信息成功:");
+                        }
+
+                        @Override
+                        public void onFailure(int code, String msg) {
+                            // TODO Auto-generated method stub
+                            UIShowUtil.toastMessage(LoginActivity.this, "更新用户信息失败:" + msg);
+                        }
+                    });
                 }
 
                 @Override
@@ -232,66 +211,11 @@ public class LoginActivity extends TitleActivity implements View.OnClickListener
 
                 }
             };
-            mInfo = new UserInfo(this, mTencent.getQQToken());
+            UserInfo mInfo = new UserInfo(this, mTencent.getQQToken());
             mInfo.getUserInfo(listener);
             Log.d("info","nickname");
         } else {
-            Log.d("traffic","error mTencent");
-        }
-    }
-
-    IUiListener loginListener = new BaseUiListener() {
-        @Override
-        protected void doComplete(JSONObject values) {
-            Log.d("info", "AuthorSwitch_SDK:" + SystemClock.elapsedRealtime());
-            initOpenidAndToken(values);
-            validLogin(user.getId());
-        }
-    };
-
-
-
-    private class BaseUiListener implements IUiListener {
-
-        @Override
-        public void onComplete(Object response) {
-            if (null == response) {
-                UIShowUtil.showResultDialog(LoginActivity.this, "返回为空", "登录失败");
-                return;
-            }
-            JSONObject jsonResponse = (JSONObject) response;
-            if (null != jsonResponse && jsonResponse.length() == 0) {
-                UIShowUtil.showResultDialog(LoginActivity.this, "返回为空", "登录失败");
-                return;
-            }
-            String openId;
-            try {
-                openId = jsonResponse.getString(Constants.PARAM_OPEN_ID);
-                user.setId(openId);
-            } catch (JSONException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            //Util.showResultDialog(LoginActivity.this, response.toString(), "登录成功");
-            // 有奖分享处理
-            // handlePrizeShare();
-            doComplete((JSONObject)response);
-        }
-
-        protected void doComplete(JSONObject values) {
-
-        }
-
-        @Override
-        public void onError(UiError e) {
-            UIShowUtil.toastMessage(LoginActivity.this, "onError: " + e.errorDetail);
-            UIShowUtil.dismissDialog();
-        }
-
-        @Override
-        public void onCancel() {
-            UIShowUtil.toastMessage(LoginActivity.this, "onCancel: ");
-            UIShowUtil.dismissDialog();
+            Log.d("info","error mTencent");
         }
     }
 }

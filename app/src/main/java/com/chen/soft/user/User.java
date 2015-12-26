@@ -5,10 +5,12 @@ import android.os.Parcelable;
 
 import com.google.gson.JsonObject;
 
+import cn.bmob.v3.BmobUser;
+
 /**
  * Created by chenchi_94 on 2015/10/11.
  */
-public class User implements Parcelable {
+public class User extends BmobUser implements Parcelable {
 
     private String id;
     private String pic;

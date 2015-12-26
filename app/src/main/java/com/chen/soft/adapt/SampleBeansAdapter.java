@@ -94,17 +94,17 @@ public class SampleBeansAdapter extends BaseAdapter {
 //              Log.d("info", "into");
                 Intent intent = new Intent(mContext, SampleDetailActivity.class);
                 Bundle bundle = new Bundle();
-                bundle.putParcelable("sample", data.get(position));
+                bundle.putSerializable("sample", data.get(position));
                 intent.putExtras(bundle);
                 mContext.startActivity(intent);
             }
         };
 
         SampleBean bean = data.get(position);
-        holder.username.setText(bean.getAuthor());
-        holder.time.setText(bean.getTime());
+        holder.username.setText(bean.getAuthor().getUserName());
+        holder.time.setText(bean.getUpdatedAt());
         holder.content.setText(bean.getTitle());
-        holder.comment_num.setText(bean.getCmCount());
+        holder.comment_num.setText(""+bean.getCmCount());
         holder.content_ll.setOnClickListener(infoDetailListener);
 
 
