@@ -22,8 +22,8 @@
     <dimen name="user_wordMargin">28dp</dimen>
     <dimen name="user_settingMargin">15dp</dimen>
 
-    <dimen name="item_sampleMargin">10dp</dimen>
-    <dimen name="item_margin">5dp</dimen>
+    <dimen name="item_sampleMargin">5dp</dimen>
+    <dimen name="item_margin">15dp</dimen>
     <dimen name="item_button">25dp</dimen>
     <dimen name="button_Margin">5dp</dimen>
 </resources>

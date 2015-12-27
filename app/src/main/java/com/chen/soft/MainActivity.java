@@ -4,8 +4,10 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.widget.TextView;
 
+import com.chen.soft.Service.UserInstallation;
 import com.chen.soft.fragment.FragmentCallback;
 import com.chen.soft.fragment.FragmentSample;
 import com.chen.soft.fragment.FragmentLaw;
@@ -14,7 +16,14 @@ import com.chen.soft.fragment.FragmentUser;
 import com.chen.soft.fragment.FragmentUtils;
 import com.chen.soft.util.LoginUtil;
 
+import java.util.List;
+
+import cn.bmob.push.BmobPush;
 import cn.bmob.v3.Bmob;
+import cn.bmob.v3.BmobInstallation;
+import cn.bmob.v3.BmobQuery;
+import cn.bmob.v3.listener.FindListener;
+import cn.bmob.v3.listener.UpdateListener;
 
 
 public class MainActivity extends FragmentActivity implements
@@ -35,6 +44,8 @@ public class MainActivity extends FragmentActivity implements
      */
     private int mCurrentTabIndex = 1;
 
+    private static String appId = "eba5bc0bae50550f95b0a934d37b62e5";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,7 +55,44 @@ public class MainActivity extends FragmentActivity implements
         mPreviousTabIndex = 0;
         setupViews();
 
-        Bmob.initialize(this, "eba5bc0bae50550f95b0a934d37b62e5");
+        Bmob.initialize(this,appId );
+        // 使用推送服务时的初始化操作
+        UserInstallation.getCurrentInstallation(this).save();
+        // 启动推送服务
+        BmobPush.startWork(this, appId);
+        BmobQuery<UserInstallation> query = new BmobQuery<UserInstallation>();
+        query.addWhereEqualTo("installationId", BmobInstallation.getInstallationId(this));
+        query.findObjects(this, new FindListener<UserInstallation>() {
+
+            @Override
+            public void onSuccess(List<UserInstallation> object) {
+                // TODO Auto-generated method stub
+                if (object.size() > 0) {
+                    UserInstallation mbi = object.get(0);
+                    mbi.setUid("000");
+                    mbi.update(MainActivity.this, new UpdateListener() {
+
+                        @Override
+                        public void onSuccess() {
+                            // TODO Auto-generated method stub
+                            Log.d("info", "设备信息更新成功");
+                        }
+
+                        @Override
+                        public void onFailure(int code, String msg) {
+                            // TODO Auto-generated method stub
+                            Log.i("bmob", "设备信息更新失败:" + msg);
+                        }
+                    });
+                } else {
+                }
+            }
+
+            @Override
+            public void onError(int code, String msg) {
+                // TODO Auto-generated method stub
+            }
+        });
     }
 
     private void setupViews() {

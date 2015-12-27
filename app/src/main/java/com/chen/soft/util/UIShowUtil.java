@@ -66,20 +66,26 @@ public class UIShowUtil {
      * @param logLevel
      *            填d, w, e分别代表debug, warn, error; 默认是debug
      */
-    public static final void toastMessage(final Activity activity,
+    public static final void toastMessage(final Context activity,
                                           final String message, String logLevel) {
-        activity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                // TODO Auto-generated method stub
-                if (mToast != null) {
-                    mToast.cancel();
-                    mToast = null;
-                }
-                mToast = Toast.makeText(activity, message, Toast.LENGTH_SHORT);
-                mToast.show();
-            }
-        });
+//        activity.runOnUiThread(new Runnable() {
+//            @Override
+//            public void run() {
+//                // TODO Auto-generated method stub
+//                if (mToast != null) {
+//                    mToast.cancel();
+//                    mToast = null;
+//                }
+//                mToast = Toast.makeText(activity, message, Toast.LENGTH_SHORT);
+//                mToast.show();
+//            }
+//        });
+        if (mToast != null) {
+            mToast.cancel();
+            mToast = null;
+        }
+        mToast = Toast.makeText(activity, message, Toast.LENGTH_SHORT);
+        mToast.show();
     }
 
     /**
@@ -90,7 +96,7 @@ public class UIShowUtil {
      * @param logLevel
      *            填d, w, e分别代表debug, warn, error; 默认是debug
      */
-    public static final void toastMessage(final Activity activity,
+    public static final void toastMessage(final Context activity,
                                           final String message) {
         toastMessage(activity, message, null);
     }

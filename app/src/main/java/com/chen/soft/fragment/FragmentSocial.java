@@ -3,6 +3,7 @@ package com.chen.soft.fragment;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.test.UiThreadTest;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -37,6 +38,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import cn.bmob.push.BmobPush;
+import cn.bmob.v3.BmobInstallation;
+import cn.bmob.v3.BmobPushManager;
 import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.datatype.BmobDate;
 import cn.bmob.v3.listener.FindListener;
@@ -57,6 +61,8 @@ public class FragmentSocial extends BaseFragment {
     private static SimpleDateFormat sfd = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
     private boolean dataLoaded;
+
+    private BmobPushManager bmobPushManager;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -84,9 +90,13 @@ public class FragmentSocial extends BaseFragment {
         initPullToRefreshListView(msgList, adapter);
 
 
+
+        bmobPushManager = new BmobPushManager(this.getActivity());
         addMsg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //UIShowUtil.toastMessage(FragmentSocial.this.getActivity(), "show toast");
+                //bmobPushManager.pushMessageAll("这是给所有设备推送的一条消息。");
                 if (LoginUtil.Login(FragmentSocial.this.getActivity())) {
                     startActivity(new Intent(FragmentSocial.this.getActivity(), AddMsgActivity.class));
                 }
