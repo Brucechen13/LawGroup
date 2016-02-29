@@ -44,7 +44,6 @@ import cn.bmob.v3.listener.FindListener;
  */
 public class FragmentSample extends BaseFragment{
 
-    private TextView hint;
     private PullToRefreshListView msgList = null;
     private SampleBeansAdapter adapter;
     private int offset = 0;
@@ -71,7 +70,6 @@ public class FragmentSample extends BaseFragment{
         super.onActivityCreated(savedInstanceState);
 
         msgList = (PullToRefreshListView) getView().findViewById(R.id.msgList);
-        hint = (TextView)getView().findViewById(R.id.hint);
 
         adapter = new SampleBeansAdapter(getView().getContext(),
                         new ArrayList<SampleBean>());
@@ -100,7 +98,6 @@ public class FragmentSample extends BaseFragment{
     }
 
     private void loadData(){
-        hint.setText(R.string.data_loading);
         BmobQuery<SampleBean> query = new BmobQuery<SampleBean>();
         query.setSkip(offset);
         query.order("-updatedAt");
@@ -114,7 +111,6 @@ public class FragmentSample extends BaseFragment{
                 offset += objects.size();
                 adapter.notifyDataSetChanged();
                 msgList.onRefreshComplete();
-                hint.setText(R.string.data_loaded);
 
                 if(objects.size() > 0){
                     offset += objects.size();
@@ -128,13 +124,11 @@ public class FragmentSample extends BaseFragment{
                 // TODO Auto-generated method stub
                 UIShowUtil.toastMessage(getActivity(), "查询失败:" + msg);
                 msgList.onRefreshComplete();
-                hint.setText(R.string.data_loaded);
             }
         });
     }
 
     private void loadNewestData(){
-        hint.setText(R.string.data_loading);
         BmobQuery<SampleBean> query = new BmobQuery<SampleBean>();
         query.addWhereGreaterThanOrEqualTo("updatedAt",new BmobDate(lastDate));
         query.order("-updatedAt");
@@ -147,7 +141,6 @@ public class FragmentSample extends BaseFragment{
                 offset += objects.size();
                 adapter.notifyDataSetChanged();
                 msgList.onRefreshComplete();
-                hint.setText(R.string.data_loaded);
                 if(objects.size() > 0){
                     offset += objects.size();
                 }else{
@@ -160,7 +153,6 @@ public class FragmentSample extends BaseFragment{
                 // TODO Auto-generated method stub
                 UIShowUtil.toastMessage(getActivity(), "查询失败:" + msg);
                 msgList.onRefreshComplete();
-                hint.setText(R.string.data_loaded);
             }
         });
     }

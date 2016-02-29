@@ -24,6 +24,7 @@
 
     <dimen name="item_sampleMargin">5dp</dimen>
     <dimen name="item_margin">15dp</dimen>
-    <dimen name="item_button">25dp</dimen>
+    <dimen name="item_button">50dp</dimen>
+    <dimen name="item_button2">40dp</dimen>
     <dimen name="button_Margin">5dp</dimen>
 </resources>

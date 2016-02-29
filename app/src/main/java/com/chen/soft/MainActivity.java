@@ -51,7 +51,8 @@ public class MainActivity extends FragmentActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         fragmentManager = getSupportFragmentManager();
-        mCurrentTabIndex = 0;
+        mCurrentTabIndex = getIntent().getIntExtra("curView", 0);
+        Log.d("info", "Main Activity"+ mCurrentTabIndex);
         mPreviousTabIndex = 0;
         setupViews();
 
@@ -81,7 +82,7 @@ public class MainActivity extends FragmentActivity implements
                         @Override
                         public void onFailure(int code, String msg) {
                             // TODO Auto-generated method stub
-                            Log.i("bmob", "设备信息更新失败:" + msg);
+                            Log.d("info", "设备信息更新失败:" + msg);
                         }
                     });
                 } else {
@@ -102,9 +103,6 @@ public class MainActivity extends FragmentActivity implements
         mTabView = (TabView) findViewById(R.id.view_tab);
         mTabView.setOnTabChangeListener(this);
         mTabView.setCurrentTab(mCurrentTabIndex);
-        //mCurrentFragment = new FragmentLaw();
-        mCurrentFragment = FragmentUtils.replaceFragment(fragmentManager, R.id.layout_content,
-                FragmentLaw.class, null, false);
 
     }
 
@@ -126,13 +124,12 @@ public class MainActivity extends FragmentActivity implements
     @Override
     public void onFragmentCallback(Fragment fragment, int id, Bundle args) {
         // TODO Auto-generated method stub
-        mTabView.setCurrentTab(1);
+        mTabView.setCurrentTab(mCurrentTabIndex);
     }
 
     @Override
     public void onTabChange(String tag) {
         // TODO Auto-generated method stub
-
         if (tag != null) {
             if (tag.equals("message")) {
                 mPreviousTabIndex = mCurrentTabIndex;
@@ -155,14 +152,7 @@ public class MainActivity extends FragmentActivity implements
                 mPreviousTabIndex = mCurrentTabIndex;
                 mCurrentTabIndex = 2;
                 mTitleTextView.setText(R.string.text_tab_profile);
-                replaceFragment(FragmentSocial.class);//, bundle
-                // 检查，如果没有登录则跳转到登录界面
-				/*
-				 * final UserConfigManager manager =
-				 * UserConfigManager.getInstance(); if (manager.getId() <= 0) {
-				 * startActivityForResult(new Intent(this, LoginActivity.class),
-				 * BaseActivity.REQUEST_OK_LOGIN); }
-				 */
+                replaceFragment(FragmentSocial.class);
             } else if (tag.equals("settings")) {
                 if(LoginUtil.Login(this)) {
                     mPreviousTabIndex = mCurrentTabIndex;
@@ -170,13 +160,6 @@ public class MainActivity extends FragmentActivity implements
                     mTitleTextView.setText(R.string.text_tab_setting);
                     replaceFragment(FragmentUser.class);
                 }
-                // 检查，如果没有登录则跳转到登录界面
-				/*
-				 * final UserConfigManager manager =
-				 * UserConfigManager.getInstance(); if (manager.getId() <= 0) {
-				 * startActivityForResult(new Intent(this, LoginActivity.class),
-				 * BaseActivity.REQUEST_OK_LOGIN); }
-				 */
             }
         }
     }

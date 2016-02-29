@@ -70,12 +70,12 @@
 
     <!-- 案例item -->
     <style name="text_sample_title">
-        <item name="android:textSize">15dip</item>
+        <item name="android:textSize">18dip</item>
         <item name="android:textColor">@color/text_item_color</item>
     </style>
 
     <style name="text_sample">
-        <item name="android:textSize">12.0dip</item>
+        <item name="android:textSize">14.0dip</item>
         <item name="android:textColor">@color/gray</item>
     </style>
 

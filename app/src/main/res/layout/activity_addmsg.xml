@@ -12,7 +12,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            style="@style/Text.Title"
             android:text="主题" />
 
         <EditText
@@ -30,7 +29,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            style="@style/Text.Title"
             android:text="内容" />
 
         <EditText
@@ -39,7 +37,6 @@
             android:inputType="textMultiLine"
             android:ems="10"
             android:id="@+id/content"
-            android:text="hahah"
             android:gravity="top"
             android:background="@color/edit_bg_color" />
     </LinearLayout>

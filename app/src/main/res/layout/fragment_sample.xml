@@ -14,10 +14,6 @@
             android:layout_height="fill_parent"
             android:layout_marginTop="5dip"
             android:orientation="vertical" >
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/hint"/>
 
             <com.handmark.pulltorefresh.library.PullToRefreshListView
                 xmlns:ptr="http://schemas.android.com/apk/lib/com.chen.soft"
@@ -49,16 +45,15 @@
             android:gravity="center">
 
             <ImageView
-                android:layout_width="@dimen/item_button"
-                android:layout_height="@dimen/item_button"
+                android:layout_width="@dimen/item_button2"
+                android:layout_height="@dimen/item_button2"
                 android:scaleType="fitXY"
                 android:src="@mipmap/create" />
 
             <TextView
-                style="@style/text_18"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="创建主题"/>
+                android:text="新案例"/>
         </LinearLayout>
 
     </RelativeLayout>

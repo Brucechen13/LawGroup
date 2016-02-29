@@ -50,7 +50,6 @@ import cn.bmob.v3.listener.FindListener;
  */
 public class FragmentSocial extends BaseFragment {
 
-    private TextView hint;
     private PullToRefreshListView msgList = null;
     private SocialBeansAdapter adapter;
     private int offset = 0;
@@ -82,7 +81,6 @@ public class FragmentSocial extends BaseFragment {
         super.onActivityCreated(savedInstanceState);
 
         msgList = (PullToRefreshListView) getView().findViewById(R.id.msgList);
-        hint = (TextView)getView().findViewById(R.id.hint);
         addMsg = (LinearLayout)getView().findViewById(R.id.create);
 
         adapter = new SocialBeansAdapter(getView().getContext(),
@@ -128,7 +126,6 @@ public class FragmentSocial extends BaseFragment {
     }
 
     private void loadData(){
-        hint.setText(R.string.data_loading);
         BmobQuery<SocialMsgBean> query = new BmobQuery<SocialMsgBean>();
         query.setSkip(offset);
         query.order("-updatedAt");
@@ -142,7 +139,6 @@ public class FragmentSocial extends BaseFragment {
                 offset += objects.size();
                 adapter.notifyDataSetChanged();
                 msgList.onRefreshComplete();
-                hint.setText(R.string.data_loaded);
 
                 if (objects.size() > 0) {
                     offset += objects.size();
@@ -156,13 +152,11 @@ public class FragmentSocial extends BaseFragment {
                 // TODO Auto-generated method stub
                 UIShowUtil.toastMessage(getActivity(), "查询失败:" + msg);
                 msgList.onRefreshComplete();
-                hint.setText(R.string.data_loaded);
             }
         });
     }
 
     private void loadNewestData(){
-        hint.setText(R.string.data_loading);
         BmobQuery<SocialMsgBean> query = new BmobQuery<SocialMsgBean>();
         query.addWhereGreaterThanOrEqualTo("updatedAt",new BmobDate(lastDate));
         query.order("-updatedAt");
@@ -175,7 +169,6 @@ public class FragmentSocial extends BaseFragment {
                 offset += objects.size();
                 adapter.notifyDataSetChanged();
                 msgList.onRefreshComplete();
-                hint.setText(R.string.data_loaded);
                 if (objects.size() > 0) {
                     offset += objects.size();
                 } else if(offset != 0){
@@ -188,7 +181,6 @@ public class FragmentSocial extends BaseFragment {
                 // TODO Auto-generated method stub
                 UIShowUtil.toastMessage(getActivity(), "查询失败:" + msg);
                 msgList.onRefreshComplete();
-                hint.setText(R.string.data_loaded);
             }
         });
     }

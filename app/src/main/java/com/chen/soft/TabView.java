@@ -5,6 +5,7 @@ package com.chen.soft;
  */
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -63,7 +64,7 @@ public class TabView extends LinearLayout implements OnClickListener {
     private void switchState(int state) {
         if (mState == state) {
             return;
-        } // else continue
+        }
 
         mState = state;
         mStateButton1.setSelected(false);
@@ -104,7 +105,9 @@ public class TabView extends LinearLayout implements OnClickListener {
             } else {
                 mOnTabChangedListener.onTabChange(null);
             }
-        } // else ignored
+        }  else {
+            Log.d("info", "mOnTabChangedListener is NULL");
+        }
     }
 
 

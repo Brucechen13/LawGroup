@@ -71,7 +71,8 @@ public class LawDetail  extends TitleActivity implements View.OnClickListener {
 //                "</html>";
         //webView.loadData(htm, "text/html; charset=UTF-8", null);//loadDataWithBaseURL
         try {
-            webView.loadData(html, "text/html", "utf-8");
+            //webView.loadData(html, "text/html", "gbk");
+            webView.loadDataWithBaseURL(null,html, "text/html", "UTF-8", null);
         }catch (Exception e){
             Log.d("info", e.toString() + "load web error");
         }
@@ -79,7 +80,7 @@ public class LawDetail  extends TitleActivity implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
-        // TODO Auto-generated method stub
+        // TODO Auto-generated method stubv
         super.onClick(v);
     }
 

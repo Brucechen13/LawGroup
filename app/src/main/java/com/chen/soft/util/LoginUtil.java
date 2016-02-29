@@ -29,7 +29,7 @@ public class LoginUtil {
     }
 
     public static boolean Login(Context context){
-        if(isLogin)
+        if(isLogin && user!=null)
             return true;
         context.startActivity(new Intent(context, LoginActivity.class));
         return false;

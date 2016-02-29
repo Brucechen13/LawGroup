@@ -37,6 +37,8 @@
             android:layout_height="match_parent"
             android:inputType="textMultiLine"
             android:ems="10"
-            android:id="@+id/content" />
+            android:gravity="top"
+            android:id="@+id/content"
+            android:background="@color/edit_bg_color" />
     </LinearLayout>
 </LinearLayout>

@@ -77,8 +77,6 @@ public class FragmentUser  extends BaseFragment implements View.OnClickListener{
         detail_img = (ImageView)view.findViewById(R.id.detail_img);
         showText();
 
-        //view.findViewById(R.id.tou_rl).setOnClickListener(this);
-        //view.findViewById(R.id.nick_rl).setOnClickListener(this);
         view.findViewById(R.id.signature_rl).setOnClickListener(this);
         view.findViewById(R.id.score_rl).setOnClickListener(this);
         view.findViewById(R.id.setting).setOnClickListener(this);
@@ -86,6 +84,10 @@ public class FragmentUser  extends BaseFragment implements View.OnClickListener{
 
     private void showText() {
         User user = LoginUtil.user;
+        if(user == null){
+            Log.d("info", "Error, user not init");
+            return;
+        }
         nick_name.setText(user.getUserName());
         signature_tv.setText(user.getSignature());
         score_tv.setText("" + user.getScore());

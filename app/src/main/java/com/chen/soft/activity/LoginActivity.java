@@ -67,6 +67,7 @@ public class LoginActivity extends TitleActivity implements View.OnClickListener
         setTitle(R.string.login);
         showBackwardView(R.string.button_backward, true);
 
+        UIShowUtil.toastMessage(this, "登录ing...");
         // Tencent类是SDK的主要实现类，开发者可通过Tencent类访问腾讯开放的OpenAPI。
         // 其中APP_ID是分配给第三方应用的appid，类型为String。
         mTencent = Tencent.createInstance(APP_ID, this.getApplicationContext());
@@ -87,9 +88,11 @@ public class LoginActivity extends TitleActivity implements View.OnClickListener
         LoginUtil.isLogin = true;
         LoginUtil.user = user;
         LoginActivity.this.finish();
-//        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-//
-//        LoginActivity.this.startActivity(intent);
+        Bundle bundle = new Bundle();
+        bundle.putInt("curView", 3);
+        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+        intent.putExtras(bundle);
+        LoginActivity.this.startActivity(intent);
     }
 
     private void qqAuthorize(){
@@ -144,7 +147,7 @@ public class LoginActivity extends TitleActivity implements View.OnClickListener
             @Override
             public void onSuccess(JSONObject userAuth) {
                 // TODO Auto-generated method stub
-                Log.i("info", authInfo.getSnsType() + "登陆成功返回:" + userAuth);
+                Log.d("info", authInfo.getSnsType() + "登陆成功返回:" + userAuth);
                 User bmobUser = BmobUser.getCurrentUser(LoginActivity.this, User.class);
                 if(bmobUser.getUserName() == null) {
                     updateUserInfo(bmobUser);
